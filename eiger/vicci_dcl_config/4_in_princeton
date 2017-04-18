@@ -1,0 +1,6 @@
+num_dcs=2
+cassandra_ips=127.0.0.1
+cassandra_ips=127.0.0.2
+cassandra_ips=127.0.0.3
+cassandra_ips=127.0.0.4
+

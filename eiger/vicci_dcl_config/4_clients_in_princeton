@@ -1,0 +1,5 @@
+num_dcs=2
+cassandra_ips=127.0.0.57
+cassandra_ips=127.0.0.58
+cassandra_ips=127.0.0.59
+cassandra_ips=127.0.0.60

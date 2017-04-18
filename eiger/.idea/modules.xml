@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/examples/client_only/client_only.iml" filepath="$PROJECT_DIR$/examples/client_only/client_only.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/eiger.iml" filepath="$PROJECT_DIR$/src/eiger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/hadoop_word_count/hadoop_word_count.iml" filepath="$PROJECT_DIR$/examples/hadoop_word_count/hadoop_word_count.iml" />
+      <module fileurl="file://$PROJECT_DIR$/contrib/pig/src/pig.iml" filepath="$PROJECT_DIR$/contrib/pig/src/pig.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/simple_authentication/simple_authentication.iml" filepath="$PROJECT_DIR$/examples/simple_authentication/simple_authentication.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tools/stress/stress.iml" filepath="$PROJECT_DIR$/tools/stress/stress.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/interface/thrift/thrift.iml" filepath="$PROJECT_DIR$/interface/thrift/thrift.iml" />
+    </modules>
+  </component>
+</project>
