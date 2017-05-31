@@ -69,7 +69,7 @@ public class ExplicitFacebookWorkload extends Operation
         
         ColumnParent parent = new ColumnParent(tables[table]);
 
-        List<ByteBuffer> keys = generateKeys(keysPerRead);
+        List<ByteBuffer> keys = generateKeys(keysPerRead,tables[table]);
         long startNano = System.nanoTime();
 
         boolean success = false;
@@ -166,6 +166,27 @@ public class ExplicitFacebookWorkload extends Operation
         return keys;
     }
 
+    private List<ByteBuffer> generateKeys(int numKeys,String table) throws IOException
+    {
+        List<ByteBuffer> keys = new ArrayList<ByteBuffer>();
+
+        for (int i = 0; i < numKeys*10 && keys.size() < numKeys; i++)
+        {
+            // We don't want to repeat keys within a mutate or a slice
+            // TODO make more efficient
+            ByteBuffer newKey = ByteBuffer.wrap(generateKey(table));
+            if (!keys.contains(newKey)) {
+                keys.add(newKey);
+            }
+        }
+
+        if (keys.size() != numKeys) {
+            error("Could not generate enough unique keys, " + keys.size() + " instead of " + numKeys);
+        }
+
+        return keys;
+    }
+
     private ByteBuffer getFBValue()
     {
         return values.get(Stress.randomizer.nextInt(values.size()));
@@ -204,40 +225,30 @@ public class ExplicitFacebookWorkload extends Operation
                 "like","updateComment","updateProfile","removeComment","removePicture","removeFriend","removeAlbum","sendMessage","refuseFriend",
                 "acceptFriend","updateSetting","updateAlbum","updateGroup"};
 
-        Map<ByteBuffer, Map<String, List<Mutation>>> records = new HashMap<ByteBuffer, Map<String, List<Mutation>>>();
 
-        for(int i=0;i<keysPerWrite;i++){
 
-            int operation=Stress.randomizer.nextInt(operations.length+1);
-            records.putAll(getMutations(facebookGenerator,operations[operation]));
-        }
 
+        long startNano = System.nanoTime();
         List<ByteBuffer> keys = generateKeys(keysPerWrite);
         int totalColumns = 0;
         int totalBytes = 0;
-        for (ByteBuffer key : keys)
-        {
-            int numColumns = getFBColumnCount(key);
-            totalColumns += numColumns;
-
-            List<Column> columns = new ArrayList<Column>();
-            int keyByteTotal = 0;
-            for (int i = 0; i < numColumns; i++)
-            {
-                ByteBuffer value = getFBValue();
-                keyByteTotal += value.limit() - value.position();
-
-                columns.add(new Column(columnName(i, session.timeUUIDComparator))
-                        .setValue(value)
-                        .setTimestamp(FBUtilities.timestampMicros()));
-            }
-            totalBytes += keyByteTotal;
-
-            assert session.getColumnFamilyType() != ColumnFamilyType.Super : "Unhandled";
-
-            //System.out.println("Writing " + ByteBufferUtil.string(key) + " with " + numColumns + " columns and " + keyByteTotal + " bytes");
-            records.put(key, getColumnsMutationMap(columns));
+        for(int i=0;i<keysPerWrite;i++){
+            int operation=Stress.randomizer.nextInt(operations.length+1);
+            generateMutationsAndWrite(clientLibrary, facebookGenerator, operations[operation], transaction);
         }
+
+        session.operations.getAndIncrement();
+        session.keys.getAndAdd(keysPerWrite);
+        session.columnCount.getAndAdd(keysPerWrite*session.getColumns_per_key_write());
+        session.bytes.getAndAdd(keysPerWrite*session.getColumns_per_key_write()*session.getColumnSize());
+        long latencyNano = System.nanoTime() - startNano;
+        session.latency.getAndAdd(latencyNano/1000000);
+        session.latencies.add(latencyNano/1000);
+    }
+
+    public void writeOne(ExplicitClientLibrary clientLibrary,ByteBuffer key, Map<ByteBuffer, Map<String, List<Mutation>>> records, HashSet<Dep> deps, boolean transaction) throws IOException {
+        //System.out.println("Writing " + ByteBufferUtil.string(key) + " with " + numColumns + " columns and " + keyByteTotal + " bytes");
+
 
         long startNano = System.nanoTime();
 
@@ -252,9 +263,18 @@ public class ExplicitFacebookWorkload extends Operation
             try
             {
                 if (transaction) {
-                    clientLibrary.transactional_batch_mutate(records,new HashSet<Dep>());
+                    if(deps==null) {
+                        clientLibrary.transactional_batch_mutate(records);
+                    }else{
+                        clientLibrary.transactional_batch_mutate(records, deps);
+                    }
                 } else {
-                    clientLibrary.batch_mutate(records,new HashSet<Dep>());
+                    if(deps==null) {
+                        clientLibrary.batch_mutate(records);
+                    }
+                    else {
+                        clientLibrary.batch_mutate(records, deps);
+                    }
                 }
                 success = true;
             }
@@ -270,135 +290,163 @@ public class ExplicitFacebookWorkload extends Operation
             error(String.format("Operation [%d] retried %d times - error inserting keys %s %s%n",
                     index,
                     session.getRetryTimes(),
-                    keys,
+                    key,
                     (exceptionMessage == null) ? "" : "(" + exceptionMessage + ")"));
         }
 
-        session.operations.getAndIncrement();
-        session.keys.getAndAdd(keysPerWrite);
-        session.columnCount.getAndAdd(keysPerWrite*session.getColumns_per_key_write());
-        session.bytes.getAndAdd(keysPerWrite*session.getColumns_per_key_write()*session.getColumnSize());
-        long latencyNano = System.nanoTime() - startNano;
-        session.latency.getAndAdd(latencyNano/1000000);
-        session.latencies.add(latencyNano/1000);
     }
 
-    public Map<ByteBuffer, Map<String, List<Mutation>>> getMutations(FacebookGenerator facebookGenerator, String operation) throws IOException {
+    public void generateMutationsAndWrite(ExplicitClientLibrary clientLibrary, FacebookGenerator facebookGenerator, String operation, boolean transation) throws IOException {
         Map<ByteBuffer, Map<String, List<Mutation>>> records = new HashMap<ByteBuffer, Map<String, List<Mutation>>>();
+        HashSet<Dep> deps=new HashSet<>();
         if(operation.equals("postOnWall")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.generateComment());
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.addTo(bb,"Walls","commentsOnWall"));
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Comments"));
+            records.put(key,facebookGenerator.generateComment());
+            records.put(ByteBuffer.wrap(generateKey("Walls")),facebookGenerator.addTo(key,"commentsOnWall"));
+            writeOne(clientLibrary, key, records, null, transation);
         }
         else if(operation.equals("comment")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.generateComment());
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.addTo(bb,"Comments","relatedComments"));
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Comments"));
+            ByteBuffer key_super=ByteBuffer.wrap(generateKey("Comments"));
+            records.put(key,facebookGenerator.generateComment());
+            records.put(key_super,facebookGenerator.addTo(key,"relatedComments"));
+            deps.add(new Dep(key_super,records.get(key_super).get("Comments").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("createAlbum")){
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.generateAlbum());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Albums"));
+            records.put(key,facebookGenerator.generateAlbum());
+            writeOne(clientLibrary, key, records, null, transation);
         }
         else if(operation.equals("addPicture")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.generatePicture());
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.addTo(bb,"Albums","pictures"));
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Picture"));
+            ByteBuffer key_super=ByteBuffer.wrap(generateKey("Albums"));
+            records.put(key,facebookGenerator.generatePicture());
+            records.put(key_super,facebookGenerator.addTo(key,"pictures"));
+            deps.add(new Dep(key_super,records.get(key_super).get("Albums").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("addFriend")){
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.generateProfile());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Profiles"));
+            records.put(key,facebookGenerator.generateProfile());
+            deps.add(new Dep(key,records.get(key).get("Profiles").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("CreateGroup")){
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.generateGroup());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Groups"));
+            records.put(key,facebookGenerator.generateGroup());
+            writeOne(clientLibrary, key, records, null, transation);
         }
         else if(operation.equals("addPersonToGroup")){
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.addTo(facebookGenerator.getFBValue(),"Groups","personsOnGroup"));
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Groups"));
+            records.put(key,facebookGenerator.addTo(facebookGenerator.getFBValue(),"personsOnGroup"));
+            deps.add(new Dep(key,records.get(key).get("Groups").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("postOnGroup")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.generateComment());
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.addTo(bb,"Groups","commentsOnGroup"));
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Comments"));
+            ByteBuffer key_super=ByteBuffer.wrap(generateKey("Groups"));
+            records.put(key,facebookGenerator.generateComment());
+            records.put(key_super,facebookGenerator.addTo(key,"commentsOnGroup"));
+            deps.add(new Dep(key_super,records.get(key_super).get("Groups").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("like")){
             String[] tables={"Comments","Pictures"};
             int table=Stress.randomizer.nextInt(2);
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.addTo(ByteBuffer.wrap(generateKey()),tables[table],"personsWhoLiked"));
+            ByteBuffer key=ByteBuffer.wrap(generateKey(tables[table]));
+            records.put(key,facebookGenerator.addTo(facebookGenerator.getFBValue(),"personsWhoLiked"));
+            deps.add(new Dep(key,records.get(key).get(tables[table]).get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("updateComment")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteComment());
-            records.put(bb,facebookGenerator.generateComment());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Comments"));
+            records.put(key,facebookGenerator.deleteComment());
+            records.put(key,facebookGenerator.generateComment());
+            deps.add(new Dep(key,records.get(key).get("Comments").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("updateProfile")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteProfile());
-            records.put(bb,facebookGenerator.generateProfile());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Profiles"));
+            records.put(key,facebookGenerator.deleteProfile());
+            records.put(key,facebookGenerator.generateProfile());
+            deps.add(new Dep(key,records.get(key).get("Profiles").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("removeComment")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteComment());
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.removeFrom("Comments",bb));
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Comments"));
+            ByteBuffer super_key=ByteBuffer.wrap(generateKey("Comments"));
+            records.put(key,facebookGenerator.deleteComment());
+            records.put(super_key,facebookGenerator.remove(key));
             //TODO find is comment on comment, wall, ...
+            deps.add(new Dep(key,records.get(key).get("Comments").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            deps.add(new Dep(super_key,records.get(super_key).get("Comments").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("removePicture")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deletePicture());
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.removeFrom("Albums",bb));
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Pictures"));
+            ByteBuffer super_key=ByteBuffer.wrap(generateKey("Albums"));
+            records.put(key,facebookGenerator.deletePicture());
+            records.put(super_key,facebookGenerator.remove(key));
+            deps.add(new Dep(key,records.get(key).get("Pictures").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            deps.add(new Dep(super_key,records.get(super_key).get("Albums").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("removeFriend")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteProfile());
-            records.put(bb,facebookGenerator.generateProfile());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Profiles"));
+            records.put(key,facebookGenerator.deleteProfile());
+            records.put(key,facebookGenerator.generateProfile());
+            deps.add(new Dep(key,records.get(key).get("Profiles").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("removeAlbum")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteAlbum());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Albums"));
+            records.put(key,facebookGenerator.deleteAlbum());
+            deps.add(new Dep(key,records.get(key).get("Albums").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("sendMessage")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.generateMessage());
-            records.put(ByteBuffer.wrap(generateKey()),facebookGenerator.addTo(bb,"Conversations","messages"));
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Messages"));
+            ByteBuffer super_key=ByteBuffer.wrap(generateKey("Conversations"));
+            records.put(key,facebookGenerator.generateMessage());
+            records.put(super_key,facebookGenerator.addTo(key,"messages"));
+            deps.add(new Dep(super_key,records.get(super_key).get("Conversations").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("refuseFriend")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteProfile());
-            records.put(bb,facebookGenerator.generateProfile());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Profiles"));
+            records.put(key,facebookGenerator.deleteProfile());
+            records.put(key,facebookGenerator.generateProfile());
+            deps.add(new Dep(key,records.get(key).get("Profiles").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("acceptFriend")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteProfile());
-            records.put(bb,facebookGenerator.generateProfile());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Profiles"));
+            records.put(key,facebookGenerator.deleteProfile());
+            records.put(key,facebookGenerator.generateProfile());
+            deps.add(new Dep(key,records.get(key).get("Profiles").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("updateSetting")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteSetting());
-            records.put(bb,facebookGenerator.generateSetting());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Settings"));
+            records.put(key,facebookGenerator.deleteSetting());
+            records.put(key,facebookGenerator.generateSetting());
+            deps.add(new Dep(key,records.get(key).get("Settings").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("updateAlbum")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteAlbum());
-            records.put(bb,facebookGenerator.generateAlbum());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Albums"));
+            records.put(key,facebookGenerator.deleteAlbum());
+            records.put(key,facebookGenerator.generateAlbum());
+            deps.add(new Dep(key,records.get(key).get("Albums").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("updateGroup")){
-            ByteBuffer bb=ByteBuffer.wrap(generateKey());
-            records.put(bb,facebookGenerator.deleteGroup());
-            records.put(bb,facebookGenerator.generateGroup());
+            ByteBuffer key=ByteBuffer.wrap(generateKey("Groups"));
+            records.put(key,facebookGenerator.deleteGroup());
+            records.put(key,facebookGenerator.generateGroup());
+            deps.add(new Dep(key,records.get(key).get("Groups").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            writeOne(clientLibrary, key, records, deps, transation);
         }
-
-        return records;
-    }
-
-    private Map<String, List<Mutation>> getColumnsMutationMap(List<Column> columns)
-    {
-        List<Mutation> mutations = new ArrayList<Mutation>();
-        Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
-
-        for (Column c : columns)
-        {
-            ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
-        }
-
-        mutationMap.put("Standard1", mutations);
-
-        return mutationMap;
     }
 }

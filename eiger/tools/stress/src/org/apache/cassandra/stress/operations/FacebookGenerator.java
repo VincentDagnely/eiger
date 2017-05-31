@@ -57,21 +57,23 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Comments", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -101,21 +103,23 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Albums", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -145,21 +149,23 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Pictures", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -189,21 +195,23 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Walls", mutations);
+        //mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -233,21 +241,23 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Groups", mutations);
+        //mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -277,21 +287,23 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Profiles", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        //mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -321,21 +333,23 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Conversations", mutations);
+        //mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -365,21 +379,23 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Settings", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        //mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -409,26 +425,28 @@ public class FacebookGenerator {
             superColumns.add(new SuperColumn(ByteBufferUtil.bytes(c),a));
         }
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (Column c : simpleColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setColumn(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            simpleMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
         for (SuperColumn c : superColumns)
         {
             ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(c);
-            mutations.add(new Mutation().setColumn_or_supercolumn(column));
+            superMutations.add(new Mutation().setColumn_or_supercolumn(column));
         }
 
-        mutationMap.put("Messages", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
 
-    public Map<String,List<Mutation>> addTo(ByteBuffer key,String table,String superColumnName) throws IOException{
+    public Map<String,List<Mutation>> addTo(ByteBuffer key,String superColumnName) throws IOException{
         List<Column> simpleColumns = new ArrayList<Column>();
 
         simpleColumns.add(new Column(key)
@@ -441,7 +459,7 @@ public class FacebookGenerator {
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
         ColumnOrSuperColumn column = new ColumnOrSuperColumn().setSuper_column(superColumn);
         mutations.add(new Mutation().setColumn_or_supercolumn(column));
-        mutationMap.put(table, mutations);
+        mutationMap.put("Super1", mutations);
 
         return mutationMap;
     }
@@ -452,21 +470,23 @@ public class FacebookGenerator {
         String[] simpleColumnNames={"comment","picture","video"};
         String[] superColumnNames={"relatedComments","personsWhoLiked","hashtags","persons@"};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Comments", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -477,21 +497,23 @@ public class FacebookGenerator {
         String[] simpleColumnNames={"name"};
         String[] superColumnNames={"pictures"};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Albums", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -502,21 +524,23 @@ public class FacebookGenerator {
         String[] simpleColumnNames={"picture"};
         String[] superColumnNames={"personsWhoLiked","personsOnPicture"};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Pictures", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -527,21 +551,23 @@ public class FacebookGenerator {
         String[] simpleColumnNames={};
         String[] superColumnNames={"commentsOnWall"};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Walls", mutations);
+        //mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -552,21 +578,23 @@ public class FacebookGenerator {
         String[] simpleColumnNames={};
         String[] superColumnNames={"commentsOnGroup","personsOnGroup"};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Groups", mutations);
+        //mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -577,21 +605,23 @@ public class FacebookGenerator {
         String[] simpleColumnNames={"profileProperty"};
         String[] superColumnNames={};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Profiles", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        //mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -602,21 +632,23 @@ public class FacebookGenerator {
         String[] simpleColumnNames={};
         String[] superColumnNames={"personsOnConversation","messages"};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Conversations", mutations);
+        //mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -627,21 +659,23 @@ public class FacebookGenerator {
         String[] simpleColumnNames={"settings"};
         String[] superColumnNames={};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Settings", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        //mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
@@ -652,33 +686,35 @@ public class FacebookGenerator {
         String[] simpleColumnNames={"message_picture_video"};
         String[] superColumnNames={"hashtags","persons@"};
 
-        List<Mutation> mutations = new ArrayList<Mutation>();
+        List<Mutation> simpleMutations = new ArrayList<Mutation>();
+        List<Mutation> superMutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         for (String c : simpleColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            simpleMutations.add(new Mutation().setDeletion(del));
         }
         for (String c : superColumnNames)
         {
             Deletion del=new Deletion().setSuper_column(ByteBufferUtil.bytes(c)).setTimestamp(FBUtilities.timestampMicros());
-            mutations.add(new Mutation().setDeletion(del));
+            superMutations.add(new Mutation().setDeletion(del));
         }
 
-        mutationMap.put("Messages", mutations);
+        mutationMap.put("Standard1", simpleMutations);
+        mutationMap.put("Super1", superMutations);
 
         return mutationMap;
     }
 
-    public Map<String,List<Mutation>> removeFrom(String table,ByteBuffer key) throws IOException{
+    public Map<String,List<Mutation>> remove(ByteBuffer key) throws IOException{
 
         List<Mutation> mutations = new ArrayList<Mutation>();
         Map<String, List<Mutation>> mutationMap = new HashMap<String, List<Mutation>>();
 
         Deletion del=new Deletion().setSuper_column(key).setTimestamp(FBUtilities.timestampMicros());
         mutations.add(new Mutation().setDeletion(del));
-        mutationMap.put(table, mutations);
+        mutationMap.put("Standard1", mutations);
 
         return mutationMap;
     }

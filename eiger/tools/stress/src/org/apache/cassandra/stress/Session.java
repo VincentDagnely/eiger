@@ -839,28 +839,12 @@ public class Session implements Serializable
         //}
 
         try {
-            return new ClientLibrary(localServerIPAndPorts, "Keyspace1", this.getConsistencyLevel());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    public ExplicitClientLibrary getExplicitClientLibrary()
-    {
-        // Allow use of client library with other consistency levels for micro-benchmarks
-        //if (this.getConsistencyLevel() != ConsistencyLevel.LOCAL_QUORUM) {
-        //    throw new RuntimeException("Session.getClientLibrary is only meant for use with consistency level LOCAL_QUORUM");
-        //}
-
-        try {
             return new ExplicitClientLibrary(localServerIPAndPorts, "Keyspace1", this.getConsistencyLevel());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }
-
 
     public ByteBuffer getRandGeneratedKey(int serverNum)
     {

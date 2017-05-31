@@ -42,15 +42,15 @@ import org.apache.thrift.transport.*;
  *
  */
 public class ClientLibrary {
-    private final HashMap<InetAddress, Cassandra.Client> addressToClient = new HashMap<InetAddress, Cassandra.Client>();
-    private final HashMap<InetAddress, Cassandra.AsyncClient> addressToAsyncClient = new HashMap<InetAddress, Cassandra.AsyncClient>();
+    protected final HashMap<InetAddress, Cassandra.Client> addressToClient = new HashMap<InetAddress, Cassandra.Client>();
+    protected final HashMap<InetAddress, Cassandra.AsyncClient> addressToAsyncClient = new HashMap<InetAddress, Cassandra.AsyncClient>();
 
-    private final ClientContext clientContext = new ClientContext();
-    private final ConsistencyLevel consistencyLevel;
-    private final IPartitioner partitioner;
-    private final RingCache ringCache;
+    protected final ClientContext clientContext = new ClientContext();
+    protected final ConsistencyLevel consistencyLevel;
+    protected final IPartitioner partitioner;
+    protected final RingCache ringCache;
 
-    private final Random randomizer = new Random();
+    protected final Random randomizer = new Random();
 
 
     //private final Logger logger = LoggerFactory.getLogger(ClientLibrary.class);
@@ -100,7 +100,7 @@ public class ClientLibrary {
         this.consistencyLevel = consistencyLevel;
     }
 
-    private String printKey(ByteBuffer key)
+    protected String printKey(ByteBuffer key)
     {
         try {
             return ByteBufferUtil.string(key) + "=" + ByteBufferUtil.bytesToHex(key);
@@ -109,7 +109,7 @@ public class ClientLibrary {
         }
     }
 
-    private String printKeys(Collection<ByteBuffer> keys) {
+    protected String printKeys(Collection<ByteBuffer> keys) {
         StringBuilder sb = new StringBuilder("{");
         for (ByteBuffer key : keys) {
             sb.append(printKey(key));
@@ -120,7 +120,7 @@ public class ClientLibrary {
         return sb.toString();
     }
 
-    private Cassandra.AsyncClient findAsyncClient(ByteBuffer key)
+    protected Cassandra.AsyncClient findAsyncClient(ByteBuffer key)
     {
         List<InetAddress> addrs = ringCache.getEndpoint(key);
         Cassandra.AsyncClient client = null;
@@ -134,7 +134,7 @@ public class ClientLibrary {
         return client;
     }
 
-    private Map<Cassandra.AsyncClient, List<ByteBuffer>> partitionByAsyncClients(Collection<ByteBuffer> keys)
+    protected Map<Cassandra.AsyncClient, List<ByteBuffer>> partitionByAsyncClients(Collection<ByteBuffer> keys)
     {
         Map<Cassandra.AsyncClient, List<ByteBuffer>> asyncClientToKeys = new HashMap<Cassandra.AsyncClient, List<ByteBuffer>>();
         for (ByteBuffer key : keys) {
@@ -148,7 +148,7 @@ public class ClientLibrary {
     }
 
 
-    private Cassandra.Client findClient(ByteBuffer key)
+    protected Cassandra.Client findClient(ByteBuffer key)
     {
         List<InetAddress> addrs = ringCache.getEndpoint(key);
         Cassandra.Client client = null;
@@ -1344,7 +1344,7 @@ public class ClientLibrary {
     }
     */
 
-    private long getTransactionId()
+    protected long getTransactionId()
     {
         //Random 64bit longs should be enough to distinguish ongoing transactions for now
         //TODO: have client ids and have them increase ... fawn-kv style
@@ -1406,7 +1406,7 @@ public class ClientLibrary {
         remove_counter(key, path, true);
     }
 
-    private void remove_counter(ByteBuffer key, ColumnPath path, boolean safe)
+    protected void remove_counter(ByteBuffer key, ColumnPath path, boolean safe)
     throws InvalidRequestException, UnavailableException, TimedOutException, TException
     {
         //if (logger.isTraceEnabled()) {

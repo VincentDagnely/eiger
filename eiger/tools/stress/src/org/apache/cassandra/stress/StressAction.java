@@ -253,6 +253,8 @@ public class StressAction extends Thread
                     client.getOperation() == Stress.Operations.INSERTCL ||
                     client.getOperation() == Stress.Operations.FACEBOOK ||
                     client.getOperation() == Stress.Operations.FACEBOOK_POPULATE ||
+                    client.getOperation() == Stress.Operations.EXPLICIT_FACEBOOK ||
+                    client.getOperation() == Stress.Operations.EXPLICIT_FACEBOOK_POPULATE ||
                     client.getOperation() == Stress.Operations.WRITE_TXN ||
                     client.getOperation() == Stress.Operations.BATCH_MUTATE ||
                     client.getOperation() == Stress.Operations.TWO_ROUND_READ_TXN ||
@@ -267,7 +269,12 @@ public class StressAction extends Thread
 
                     try
                     {
-                        operations.take().run(library); // running job
+                        if(client.getOperation() == Stress.Operations.EXPLICIT_FACEBOOK ||
+                                client.getOperation() == Stress.Operations.EXPLICIT_FACEBOOK_POPULATE ) {
+                            operations.take().run((ExplicitClientLibrary)library); // running job
+                        }else{
+                            operations.take().run(library); // running job
+                        }
                     }
                     catch (Exception e)
                     {
@@ -280,33 +287,6 @@ public class StressAction extends Thread
                     output.println(e.getMessage());
                     e.printStackTrace();
 			        break;
-                    }
-                }
-            }
-            else if(client.getOperation() == Stress.Operations.EXPLICIT_FACEBOOK ||
-                    client.getOperation() == Stress.Operations.EXPLICIT_FACEBOOK_POPULATE ){
-                ExplicitClientLibrary library = client.getExplicitClientLibrary();
-
-                for (int i = 0; i < items; i++)
-                {
-                    if (stop)
-                        break;
-
-                    try
-                    {
-                        operations.take().run(library); // running job
-                    }
-                    catch (Exception e)
-                    {
-                        if (output == null)
-                        {
-                            System.err.println(e.getMessage());
-                            e.printStackTrace();
-                            System.exit(-1);
-                        }
-                        output.println(e.getMessage());
-                        e.printStackTrace();
-                        break;
                     }
                 }
             }

@@ -39,47 +39,47 @@ public class ExplicitFacebookPopulator extends Operation
         //System.out.println("Populating " + rawKey + " with " + columnCount + " columns" + " and " + totalBytes + " bytes");
         Map<ByteBuffer, Map<String, List<Mutation>>> records = new HashMap<ByteBuffer, Map<String, List<Mutation>>>();
         // format used for keys
-        String format = "%0" + session.getTotalKeysLength() + "d";
+        String format = "Comments%0" + session.getTotalKeysLength() + "d";
         String rawKey = String.format(format, index);
         ByteBuffer key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generateComment());
 
-        format = "%0" + session.getTotalKeysLength() + "d";
+        format = "Albums%0" + session.getTotalKeysLength() + "d";
         rawKey = String.format(format, index);
         key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generateAlbum());
 
-        format = "%0" + session.getTotalKeysLength() + "d";
+        format = "Conversations%0" + session.getTotalKeysLength() + "d";
         rawKey = String.format(format, index);
         key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generateConversation());
 
-        format = "%0" + session.getTotalKeysLength() + "d";
+        format = "Groups%0" + session.getTotalKeysLength() + "d";
         rawKey = String.format(format, index);
         key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generateGroup());
 
-        format = "%0" + session.getTotalKeysLength() + "d";
+        format = "Messages%0" + session.getTotalKeysLength() + "d";
         rawKey = String.format(format, index);
         key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generateMessage());
 
-        format = "%0" + session.getTotalKeysLength() + "d";
+        format = "Pictures%0" + session.getTotalKeysLength() + "d";
         rawKey = String.format(format, index);
         key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generatePicture());
 
-        format = "%0" + session.getTotalKeysLength() + "d";
+        format = "Profiles%0" + session.getTotalKeysLength() + "d";
         rawKey = String.format(format, index);
         key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generateProfile());
 
-        format = "%0" + session.getTotalKeysLength() + "d";
+        format = "Settings%0" + session.getTotalKeysLength() + "d";
         rawKey = String.format(format, index);
         key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generateSetting());
 
-        format = "%0" + session.getTotalKeysLength() + "d";
+        format = "Walls%0" + session.getTotalKeysLength() + "d";
         rawKey = String.format(format, index);
         key = ByteBufferUtil.bytes(rawKey);
         records.put(key, facebookGenerator.generateWall());

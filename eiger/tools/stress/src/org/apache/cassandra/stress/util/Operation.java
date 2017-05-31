@@ -225,6 +225,44 @@ public abstract class Operation
     }
 
     /**
+     * key generator using Gauss or Random algorithm
+     * @return byte[] representation of the key string
+     */
+    protected byte[] generateKey(String table)
+    {
+        return (session.useRandomGenerator()) ? generateRandomKey(table) : generateGaussKey(table);
+    }
+
+    /**
+     * Random key generator
+     * @return byte[] representation of the key string
+     */
+    private byte[] generateRandomKey(String table)
+    {
+        String format = table+"%0" + session.getTotalKeysLength() + "d";
+        return String.format(format, Stress.randomizer.nextInt(Stress.session.getNumDifferentKeys() - 1)).getBytes(UTF_8);
+    }
+
+    /**
+     * Gauss key generator
+     * @return byte[] representation of the key string
+     */
+    private byte[] generateGaussKey(String table)
+    {
+        String format = table+"%0" + session.getTotalKeysLength() + "d";
+
+        for (;;)
+        {
+            double token = nextGaussian(session.getMean(), session.getSigma());
+
+            if (0 <= token && token < session.getNumDifferentKeys())
+            {
+                return String.format(format, (int) token).getBytes(UTF_8);
+            }
+        }
+    }
+
+    /**
      * Gaussian distribution.
      * @param mu is the mean
      * @param sigma is the standard deviation

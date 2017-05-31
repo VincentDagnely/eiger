@@ -75,13 +75,8 @@ for dc in $(seq 0 $((num_dcs-1))); do
 done
 echo ${clients_by_dc[@]}
 
-
 kill_all_cmd="${cops_dir}/vicci_cassandra_killer.bash ${cops_dir}/vicci_dcl_config/${dcl_config}"
 stress_killer="${cops_dir}/kill_stress_vicci.bash"
-
-
-source $exp_dir/dynamic_common
-
 
 # Modified from from dynamic_common
 cops_fb_populate_cluster() {
@@ -142,7 +137,7 @@ fb_populate_cluster() {
 		$stress_killer; sleep 1; 
 		cd /home/vincent/Documents/eiger/eiger/; 
 		cd ${src_dir}/tools/stress; 
-		bin/stress --nodes=$first_dc_servers_csv --operation=FACEBOOK_POPULATE --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$keys_per_client --num-keys=$keys_per_client --stress-index=$cli_index --stress-count=$num_clients_per_dc > >(tee ~/${dynamic_dir}/${exp_uid}/populate.out) 2> >(tee ~/${dynamic_dir}/${exp_uid}/populate.err) 2>&1 | awk '{ print "'$client': "$0 }' &
+		bin/stress --nodes=$first_dc_servers_csv --operation=EXPLICIT_FACEBOOK_POPULATE --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$keys_per_client --num-keys=$keys_per_client --stress-index=$cli_index --stress-count=$num_clients_per_dc > >(tee ~/${dynamic_dir}/${exp_uid}/populate.out) 2> >(tee ~/${dynamic_dir}/${exp_uid}/populate.err) 2>&1 | awk '{ print "'$client': "$0 }' &
 		pop_pid=$!
 		pop_pids="$pop_pids $pop_pid"
 	    done
@@ -205,9 +200,9 @@ fb_populate_cluster() {
 		client=$(echo ${clients_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
 
 		mkdir -p $cli_output_dir; 
-		cd /home/vincent/Documents/eiger/eigercd 
-		${src_dir}/tools/stress;
-		((bin/stress --progress-interval=1 --nodes=$local_servers_csv --	operation=FACEBOOK --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$total_keys --stress-index=$cli_index --stress-count=$num_clients_per_dc --num-keys=2000000 --write-transaction-fraction=$write_trans_frac --threads=64 > >(tee ${cli_output_dir}/${data_file_name}) 2> ${cli_output_dir}/${data_file_name}.stderr ) &); 
+		cd /home/vincent/Documents/eiger/eiger
+		cd ${src_dir}/tools/stress;
+		((bin/stress --progress-interval=1 --nodes=$local_servers_csv --	operation=EXPLICIT_FACEBOOK --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$total_keys --stress-index=$cli_index --stress-count=$num_clients_per_dc --num-keys=2000000 --write-transaction-fraction=$write_trans_frac --threads=64 > >(tee ${cli_output_dir}/${data_file_name}) 2> ${cli_output_dir}/${data_file_name}.stderr ) &); 
 		sleep $((exp_time + 10)); ${src_dir}/kill_stress_vicci.bash
 		2>&1 | awk '{ print "'$client': "$0 }' &
 	    done
@@ -216,8 +211,6 @@ fb_populate_cluster() {
 	#wait for clients to finish
 	wait
     }
-
-
 
 #######################################
 #
@@ -237,19 +230,22 @@ trim=15
 
 echo -e "STARTING $0 $@" >> ~/cops2/experiments/progress
 
-num_trials=5
+num_trials=1
 for trial in $(seq $num_trials); do
     for write_trans_frac in 0.0 1.0; do
 	variable=$write_trans_frac
 
 	echo -e "Running $0\t$variable at $(date)" >> ~/cops2/experiments/progress
 
+	cd /home/vincent/Documents/eiger/eiger
+ 	./kill_all_cassandra
+ 	./cassandra_dc_launcher.bash 2 2
 	#cops_cluster_start_cmd
 	cops_fb_populate_cluster ${total_keys}
 
         cops_fb_run_experiment $total_keys $write_trans_frac $run_time $variable $trial
 
-	$kill_all_cmd
+	#$kill_all_cmd
 
 
 	if [ $write_trans_frac == "0.0" ]; then
@@ -258,10 +254,13 @@ for trial in $(seq $num_trials); do
 
 	    vanilla_fb_run_experiment $total_keys $write_trans_frac $run_time $variable $trial
 
-	    $kill_all_cmd
+	    #$kill_all_cmd
 	fi
 
 	gather_results
+
+	cd /home/vincent/Documents/eiger/eiger
+ 	./kill_all_cassandra.bash
     done
 done
 
@@ -273,7 +272,7 @@ echo -e "FINISHED $0\tat $(date)" >> ~/cops2/experiments/progress
 #
 #######################################
 set +x
-$kill_all_cmd
+#$kill_all_cmd
 set -x
 
 #######################################
@@ -283,6 +282,4 @@ set -x
 #######################################
 cd $exp_dir
 ./dynamic_postprocess_full.bash . ${output_dir} ${run_time} ${trim} shuffle
-
-
 
