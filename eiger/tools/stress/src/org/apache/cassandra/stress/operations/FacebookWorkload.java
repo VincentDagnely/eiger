@@ -126,7 +126,7 @@ public class FacebookWorkload extends Operation
         }
         else
         {
-            ColumnParent parent = new ColumnParent("Standard1");
+            ColumnParent parent = new ColumnParent("Super1");
 
             List<ByteBuffer> keys = generateKeys(keysPerRead);
             long startNano = System.nanoTime();
@@ -146,6 +146,7 @@ public class FacebookWorkload extends Operation
 
                     results = clientLibrary.transactional_multiget_slice(keys, parent, nColumnsPredicate);
 
+                    results.get(keys);
                     success = (results.size() == keysPerRead);
                     if (!success)
                         exceptionMessage = "Wrong number of keys: " + results.size() + " instead of " + keysPerRead;

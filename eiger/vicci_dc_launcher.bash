@@ -30,24 +30,25 @@ if [ $(($nodes_per_dc * $num_dcs)) -ne ${#ips[@]} ]; then
 fi
 
 echo 0
+echo $client
 #clean up all nodes in parallel
 for ip in ${ips[@]}; do
-    (ssh -t -t -o StrictHostKeyChecking=no vincent@$ip "\
-/home/vincent/Documents/eiger/eiger/kill_all_cassandra.bash;\
-rm /home/vincent/Documents/eiger/eiger/*hprof 2> /dev/null;\
-rm /home/vincent/Documents/eiger/eiger/cassandra-vanilla/*hprof 2> /dev/null;\
-rm /home/vincent/Documents/eiger/eiger/cassandra_var/cassandra*log 2> /dev/null;\
-rm /home/vincent/Documents/eiger/eiger/cassandra_var/cassandra*log* 2> /dev/null;\
-rm -rf /home/vincent/Documents/eiger/eiger/cassandra_var/data/* 2> /dev/null;\
-rm -rf /home/vincent/Documents/eiger/eiger/cassandra_var/commitlog/* 2> /dev/null;\
-rm -rf /home/vincent/Documents/eiger/eiger/cassandra_var/saved_caches/* 2> /dev/null;\
-rm -rf /home/vincent/Documents/eiger/eiger/cassandra_var/stdout/* 2> /dev/null;\
-mkdir /home/vincent/Documents/eiger/eiger/cassandra_var 2> /dev/null;\
-mkdir /home/vincent/Documents/eiger/eiger/cassandra_var/data 2> /dev/null;\
-mkdir /home/vincent/Documents/eiger/eiger/cassandra_var/commitlog 2> /dev/null;\
-mkdir /home/vincent/Documents/eiger/eiger/cassandra_var/saved_caches 2> /dev/null;\
-mkdir /home/vincent/Documents/eiger/eiger/cassandra_var/stdout 2> /dev/null;\
-" 2>&1 | awk '{ print "'$ip': "$0 }' ) &
+    (ssh vdagnely@access.grid5000.fr "ssh $client -o StrictHostKeyChecking=no '\
+home/vincent/Documents/eiger/eiger/kill_all_cassandra.bash;\
+rm home/vincent/Documents/eiger/eiger/*hprof 2> /dev/null;\
+rm home/vincent/Documents/eiger/eiger/cassandra-vanilla/*hprof 2> /dev/null;\
+rm home/vincent/Documents/eiger/eiger/cassandra_var/cassandra*log 2> /dev/null;\
+rm home/vincent/Documents/eiger/eiger/cassandra_var/cassandra*log* 2> /dev/null;\
+rm -rf home/vincent/Documents/eiger/eiger/cassandra_var/data/* 2> /dev/null;\
+rm -rf home/vincent/Documents/eiger/eiger/cassandra_var/commitlog/* 2> /dev/null;\
+rm -rf home/vincent/Documents/eiger/eiger/cassandra_var/saved_caches/* 2> /dev/null;\
+rm -rf home/vincent/Documents/eiger/eiger/cassandra_var/stdout/* 2> /dev/null;\
+mkdir home/vincent/Documents/eiger/eiger/cassandra_var 2> /dev/null;\
+mkdir home/vincent/Documents/eiger/eiger/cassandra_var/data 2> /dev/null;\
+mkdir home/vincent/Documents/eiger/eiger/cassandra_var/commitlog 2> /dev/null;\
+mkdir home/vincent/Documents/eiger/eiger/cassandra_var/saved_caches 2> /dev/null;\
+mkdir home/vincent/Documents/eiger/eiger/cassandra_var/stdout 2> /dev/null;\
+'" 2>&1 | awk '{ print "'$ip': "$0 }' ) &
 done
 echo 1
 #wait

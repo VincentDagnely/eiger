@@ -41,6 +41,14 @@ ln -s $output_dir $output_dir_base/latest
 
 dcl_config_full="${cops_dir}/vicci_dcl_config/${dcl_config}"
 
+
+
+all_server_node_names=($(cat $dcl_config_full | grep node_name | awk -F"=" '{ print $2 }' | xargs))
+all_server_node_names=$(echo "echo ${all_server_node_names[@]}" | bash)
+all_server_jobs=($(cat $dcl_config_full | grep job | awk -F"=" '{ print $2 }' | xargs))
+all_server_jobs=$(echo "echo ${all_server_jobs[@]}" | bash)
+all_server_ips=($(cat $dcl_config_full | grep node_ips | awk -F"=" '{ print $2 }' | xargs))
+all_server_ips=$(echo "echo ${all_server_ips[@]}" | bash)
 all_servers=($(cat $dcl_config_full | grep cassandra_ips | awk -F"=" '{ print $2 }' | xargs))
 all_servers=$(echo "echo ${all_servers[@]}" | bash)
 num_dcs=$(cat $dcl_config_full | grep num_dcs | awk -F"=" '{ print $2 }')
@@ -54,15 +62,28 @@ num_servers=$(echo $all_servers | wc -w)
 num_servers_per_dc=$((num_servers / num_dcs))
 
 for dc in $(seq 0 $((num_dcs-1))); do
+    this_dc_server_node_names=$(echo $all_server_node_names | sed 's/ /\n/g' | head -n $((num_servers_per_dc * (dc+1))) | tail -n $num_servers_per_dc | xargs)
+    server_node_names_by_dc[$dc]=${this_dc_server_node_names}
+    this_dc_server_jobs=$(echo $all_server_jobs | sed 's/ /\n/g' | head -n $((num_servers_per_dc * (dc+1))) | tail -n $num_servers_per_dc | xargs)
+    server_jobs_by_dc[$dc]=${this_dc_server_jobs}
+    this_dc_server_ips=$(echo $all_server_ips | sed 's/ /\n/g' | head -n $((num_servers_per_dc * (dc+1))) | tail -n $num_servers_per_dc | xargs)
+    server_ips_by_dc[$dc]=${this_dc_server_ips}
     this_dc_servers=$(echo $all_servers | sed 's/ /\n/g' | head -n $((num_servers_per_dc * (dc+1))) | tail -n $num_servers_per_dc | xargs)
     servers_by_dc[$dc]=${this_dc_servers}
 done
-echo ${servers_by_dc[@]}
+echo ${server_ips_by_dc[@]}
 
 
 
 client_config_full="${cops_dir}/vicci_dcl_config/${client_config}"
 
+
+all_client_node_names=($(cat $client_config_full | grep node_name | awk -F"=" '{ print $2 }' | xargs))
+all_client_node_names=$(echo "echo ${all_client_node_names[@]}" | bash)
+all_client_jobs=($(cat $client_config_full | grep job | awk -F"=" '{ print $2 }' | xargs))
+all_client_jobs=$(echo "echo ${all_client_jobs[@]}" | bash)
+all_client_ips=($(cat $client_config_full | grep node_ips | awk -F"=" '{ print $2 }' | xargs))
+all_client_ips=$(echo "echo ${all_client_ips[@]}" | bash)
 all_clients=$(cat $client_config_full | grep cassandra_ips | awk -F"=" '{ print $2 }' | xargs)
 all_clients=$(echo "echo ${all_clients[@]}" | bash)
 
@@ -70,6 +91,12 @@ num_clients=$(echo $all_clients | wc -w)
 num_clients_per_dc=$((num_clients / num_dcs))
 
 for dc in $(seq 0 $((num_dcs-1))); do
+    this_dc_clients_node_names=$(echo $all_client_node_names | sed 's/ /\n/g' | head -n $((num_clients_per_dc * (dc+1))) | tail -n $num_clients_per_dc | xargs)
+    client_node_names_by_dc[$dc]=${this_dc_clients_node_names}
+    this_dc_client_jobs=$(echo $all_client_jobs | sed 's/ /\n/g' | head -n $((num_clients_per_dc * (dc+1))) | tail -n $num_clients_per_dc | xargs)
+    client_jobs_by_dc[$dc]=${this_dc_client_jobs}
+    this_dc_client_ips=$(echo $all_client_ips | sed 's/ /\n/g' | head -n $((num_clients_per_dc * (dc+1))) | tail -n $num_clients_per_dc | xargs)
+    client_ips_by_dc[$dc]=${this_dc_client_ips}
     this_dc_clients=$(echo $all_clients | sed 's/ /\n/g' | head -n $((num_clients_per_dc * (dc+1))) | tail -n $num_clients_per_dc | xargs)
     clients_by_dc[$dc]=${this_dc_clients}
 done
@@ -101,17 +128,17 @@ fb_populate_cluster() {
 
 
     #set the keyspace
-    for i in $(seq 3); do
-	first_dc_servers_csv=$(echo ${servers_by_dc[0]} | sed 's/ /,/g')
+    #for i in $(seq 3); do
+	#first_dc_servers_csv=$(echo ${server_ips_by_dc[0]} | sed 's/ /,/g')
 
 	# set up a killall for stress in case it hangs
-	(sleep 60; killall stress) &
-	killall_jck_pid=$!
-	cd /home/vincent/Documents/eiger/eiger
-	${src_dir}/tools/stress/bin/stress --nodes=$first_dc_servers_csv --just-create-keyspace --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties
-	kill $killall_jck_pid
-	sleep 5
-    done
+	#(sleep 60; killall stress) &
+	#killall_jck_pid=$!
+	#cd /home/vincent/Documents/eiger/eiger
+	#${src_dir}/tools/stress/bin/stress --nodes=$first_dc_servers_csv --just-create-keyspace --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties
+	#kill $killall_jck_pid
+	#sleep 5
+    #done
 
 
     populate_attempts=0
@@ -133,16 +160,38 @@ fb_populate_cluster() {
 
 	    for cli_index in $(seq 0 $((num_clients_per_dc - 1))); do
 		client=$(echo ${clients_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
-
+		job=$(echo ${client_jobs_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
+		ip=$(echo ${client_ips_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
+		node_name=$(echo ${client_node_names_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
+		
 	        #all_servers_csv=$(echo $all_servers | sed 's/ /,/g')
-		first_dc_servers_csv=$(echo ${servers_by_dc[0]} | sed 's/ /,/g')
+		first_dc_servers_csv=$(echo ${server_ips_by_dc[0]} | sed 's/ /,/g')
+		echo ${server_ips_by_dc}
+		echo first_dc_serves_csv
 
-
-		mkdir -p ~/${dynamic_dir}/${exp_uid}; 
-		$stress_killer; sleep 1; 
-		cd /home/vincent/Documents/eiger/eiger/; 
-		cd ${src_dir}/tools/stress; 
-		bin/stress --nodes=$first_dc_servers_csv --operation=FACEBOOK_POPULATE --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$keys_per_client --num-keys=$keys_per_client --stress-index=$cli_index --stress-count=$num_clients_per_dc > >(tee ~/${dynamic_dir}/${exp_uid}/populate.out) 2> >(tee ~/${dynamic_dir}/${exp_uid}/populate.err) 2>&1 | awk '{ print "'$client': "$0 }' &
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+mkdir -p /home/vdagnely/${dynamic_dir}/${exp_uid}/$node_name" 
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+/home/vdagnely$stress_killer"
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\ sleep 1"
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+touch /home/vdagnely/${dynamic_dir}/${exp_uid}/$node_name/populate.out"
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+touch  /home/vdagnely/${dynamic_dir}/${exp_uid}/$node_name/populate.err"
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+home/vdagnely${src_dir}/tools/stress/bin/stress \
+--nodes=$first_dc_servers_csv \
+--operation=FACEBOOK_POPULATE \
+--consistency-level=LOCAL_QUORUM \
+--replication-strategy=NetworkTopologyStrategy \
+--strategy-properties=$strategy_properties \
+--num-different-keys=$keys_per_client \
+--num-keys=$keys_per_client \
+--stress-index=$cli_index \
+--stress-count=$num_clients_per_dc \
+ >> /home/vdagnely/${dynamic_dir}/${exp_uid}/$node_name/populate.out \
+2>> /home/vdagnely/${dynamic_dir}/${exp_uid}/$node_name/populate.err \
+" 2>&1 | awk '{ print "'$client': "$0 }' &
 		pop_pid=$!
 		pop_pids="$pop_pids $pop_pid"
 	    done
@@ -194,22 +243,47 @@ fb_populate_cluster() {
 	src_dir=$6
 	cluster_type=$7
 
-	cli_output_dir="~/${dynamic_dir}/${exp_uid}/${cluster_type}/trial${trial}"
+	cli_output_dir="${dynamic_dir}/${exp_uid}/${cluster_type}/trial${trial}"
 	data_file_name=$1_$2_$3+${4}+data
 
 	#for dc in $(seq 0 $((num_dcs - 1))); do
 	for dc in 0; do
-	    local_servers_csv=$(echo ${servers_by_dc[$dc]} | sed 's/ /,/g')
+	    local_servers_csv=$(echo ${server_ips_by_dc[$dc]} | sed 's/ /,/g')
 
 	    for cli_index in $(seq 0 $((num_clients_per_dc - 1))); do
 		client=$(echo ${clients_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
+		job=$(echo ${client_jobs_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
+		ip=$(echo ${client_ips_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
+		node_name=$(echo ${client_node_names_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
 
-		mkdir -p $cli_output_dir; 
-		cd /home/vincent/Documents/eiger/eigercd 
-		${src_dir}/tools/stress;
-		((bin/stress --progress-interval=1 --nodes=$local_servers_csv --	operation=FACEBOOK --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$total_keys --stress-index=$cli_index --stress-count=$num_clients_per_dc --num-keys=2000000 --write-transaction-fraction=$write_trans_frac --threads=64 > >(tee ${cli_output_dir}/${data_file_name}) 2> ${cli_output_dir}/${data_file_name}.stderr ) &); 
-		sleep $((exp_time + 10)); ${src_dir}/kill_stress_vicci.bash
-		2>&1 | awk '{ print "'$client': "$0 }' &
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+mkdir -p /home/vdagnely/$cli_output_dir/$node_name"
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+touch /home/vdagnely/${cli_output_dir}/$node_name/${data_file_name}"
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+touch /home/vdagnely/${cli_output_dir}/$node_name/${data_file_name}.stderr"
+		ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+home/vdagnely${src_dir}/tools/stress/bin/stress \
+--progress-interval=1 \
+--nodes=$local_servers_csv \
+--operation=FACEBOOK \
+--consistency-level=LOCAL_QUORUM \
+--replication-strategy=NetworkTopologyStrategy \
+--strategy-properties=$strategy_properties \
+--num-different-keys=$total_keys \
+--stress-index=$cli_index \
+--stress-count=$num_clients_per_dc \
+--num-keys=2000000 \
+--write-transaction-fraction=$write_trans_frac \
+--threads=64 \
+ >> (tee /home/vdagnely/${cli_output_dir}/$node_name/${data_file_name}) \
+2>> (tee /home/vdagnely/${cli_output_dir}/$node_name/${data_file_name}.stderr) \
+"
+	ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+sleep $((exp_time + 10))"
+	ssh vdagnely@access.grid5000.fr ssh $client OAR_JOB_ID=$job oarsh $node_name "\
+${src_dir}/kill_stress_vicci.bash" \
+2>&1 | awk '{ print "'$client': "$0 }' &
 	    done
 	done
 
@@ -244,7 +318,7 @@ for trial in $(seq $num_trials); do
 
 	echo -e "Running $0\t$variable at $(date)" >> ~/cops2/experiments/progress
 
-	#cops_cluster_start_cmd
+	cops_cluster_start_cmd
 	cops_fb_populate_cluster ${total_keys}
 
         cops_fb_run_experiment $total_keys $write_trans_frac $run_time $variable $trial
@@ -283,6 +357,4 @@ set -x
 #######################################
 cd $exp_dir
 ./dynamic_postprocess_full.bash . ${output_dir} ${run_time} ${trim} shuffle
-
-
 

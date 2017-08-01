@@ -128,7 +128,7 @@ public class FacebookGenerator {
         List<Column> simpleColumns = new ArrayList<Column>();
 
         String[] simpleColumnNames={"picture"};
-        String[] superColumnNames={"personsWhoLiked","personsOnPicture"};
+        String[] superColumnNames={"personsWhoLiked","personsOnPicture","comments"};
         for (String c : simpleColumnNames)
         {
             ByteBuffer value = getFBValue();
@@ -266,7 +266,7 @@ public class FacebookGenerator {
         List<Column> simpleColumns = new ArrayList<Column>();
 
         String[] simpleColumnNames={"profileProperty"};
-        String[] superColumnNames={};
+        String[] superColumnNames={"albums","conversations"};
         for (String c : simpleColumnNames)
         {
             ByteBuffer value = getFBValue();
@@ -522,7 +522,7 @@ public class FacebookGenerator {
         List<Column> simpleColumns = new ArrayList<Column>();
 
         String[] simpleColumnNames={"picture"};
-        String[] superColumnNames={"personsWhoLiked","personsOnPicture"};
+        String[] superColumnNames={"personsWhoLiked","personsOnPicture","comments"};
 
         List<Mutation> simpleMutations = new ArrayList<Mutation>();
         List<Mutation> superMutations = new ArrayList<Mutation>();
@@ -603,7 +603,7 @@ public class FacebookGenerator {
         List<Column> simpleColumns = new ArrayList<Column>();
 
         String[] simpleColumnNames={"profileProperty"};
-        String[] superColumnNames={};
+        String[] superColumnNames={"albums","conversations"};
 
         List<Mutation> simpleMutations = new ArrayList<Mutation>();
         List<Mutation> superMutations = new ArrayList<Mutation>();

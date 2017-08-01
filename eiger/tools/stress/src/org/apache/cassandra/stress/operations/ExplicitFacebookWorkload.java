@@ -46,7 +46,10 @@ public class ExplicitFacebookWorkload extends Operation
 
             write(clientLibrary, 1, transaction);
         } else {
-            read(clientLibrary, getFBReadBatchSize());
+            String[] tables={"Walls","Profiles","Pictures","Groups","Profiles","Conversations","Settings"};
+            String[] superColumNames={"commentsOnWall","albums","comments","commentsOnGroup","conversations","messages",null};
+            int chosen=Stress.randomizer.nextInt(tables.length);
+            read2(clientLibrary, 1,tables[chosen],superColumNames[chosen]);
         }
     }
 
@@ -67,7 +70,7 @@ public class ExplicitFacebookWorkload extends Operation
         long bytesCount = 0;
         int table=Stress.randomizer.nextInt(tables.length);
         
-        ColumnParent parent = new ColumnParent(tables[table]);
+        ColumnParent parent = new ColumnParent("Super1");
 
         List<ByteBuffer> keys = generateKeys(keysPerRead,tables[table]);
         long startNano = System.nanoTime();
@@ -86,6 +89,134 @@ public class ExplicitFacebookWorkload extends Operation
                 bytesCount = 0;
 
                 results = clientLibrary.transactional_multiget_slice(keys, parent, nColumnsPredicate);
+
+                success = (results.size() == keysPerRead);
+                if (!success)
+                    exceptionMessage = "Wrong number of keys: " + results.size() + " instead of " + keysPerRead;
+
+                //String allReads = "Read ";
+                for (Entry<ByteBuffer, List<ColumnOrSuperColumn>> entry : results.entrySet())
+                {
+                    ByteBuffer key = entry.getKey();
+                    List<ColumnOrSuperColumn> columns = entry.getValue();
+
+                    columnCount += columns.size();
+                    success = (columns.size() > 0);
+                    if (!success) {
+                        exceptionMessage = "No columns returned for " + ByteBufferUtil.string(key);
+                        break;
+                    }
+
+                    int keyByteTotal = 0;
+                    for (ColumnOrSuperColumn cosc : columns) {
+                        keyByteTotal += ColumnOrSuperColumnHelper.findLength(cosc);
+                    }
+                    bytesCount += keyByteTotal;
+
+                    //allReads += ByteBufferUtil.string(key) + " = " + columns.size() + " cols = " + keyByteTotal + "B, ";
+                }
+                //allReads = allReads.substring(0, allReads.length() - 2);
+                //System.out.println(allReads);
+            }
+            catch (Exception e)
+            {
+                exceptionMessage = getExceptionMessage(e);
+                success = false;
+            }
+
+
+            if (!success)
+            {
+                List<String> raw_keys = new ArrayList<String>();
+                for (ByteBuffer key : keys) {
+                    raw_keys.add(ByteBufferUtil.string(key));
+                }
+                error(String.format("Operation [%d] retried %d times - error on calling multiget_slice for keys %s %s%n",
+                        index,
+                        session.getRetryTimes(),
+                        raw_keys,
+                        (exceptionMessage == null) ? "" : "(" + exceptionMessage + ")"));
+            }
+
+            session.operations.getAndIncrement();
+            session.keys.getAndAdd(keys.size());
+            session.columnCount.getAndAdd(columnCount);
+            session.bytes.getAndAdd(bytesCount);
+            long latencyNano = System.nanoTime() - startNano;
+            session.latency.getAndAdd(latencyNano/1000000);
+            session.latencies.add(latencyNano/1000);
+        }
+    }
+
+    public void read2(ExplicitClientLibrary clientLibrary, int keysPerRead, String tableName, String superColumnName) throws IOException
+    {
+        // We grab all columns for the key, they have been set there by the populator / writes
+        // TODO ensure/make writes blow away all old columns
+        SlicePredicate nColumnsPredicate = new SlicePredicate().setSlice_range(new SliceRange().setStart(ByteBufferUtil.EMPTY_BYTE_BUFFER)
+                .setFinish(ByteBufferUtil.EMPTY_BYTE_BUFFER)
+                .setReversed(false)
+                .setCount(1024));
+
+        String[] tables={"Comments","Albums","Pictures","Walls","Groups","Profiles","Conversations","Settings","Messages"};
+        Map<ByteBuffer,List<ColumnOrSuperColumn>> results;
+
+        int columnCount = 0;
+        long bytesCount = 0;
+        int table=Stress.randomizer.nextInt(tables.length);
+
+        ColumnParent super1 = new ColumnParent("Super1");
+        ColumnParent standard1 = new ColumnParent("Standard1");
+
+        List<ByteBuffer> keys = generateKeys(keysPerRead,tableName);
+        long startNano = System.nanoTime();
+
+        boolean success = false;
+        String exceptionMessage = null;
+
+        for (int t = 0; t < session.getRetryTimes(); t++)
+        {
+            if (success)
+                break;
+
+            try
+            {
+                columnCount = 0;
+                bytesCount = 0;
+                ArrayList<ByteBuffer> columnNames=new ArrayList<ByteBuffer>();
+                if(superColumnName != null) {
+                    columnNames.add(ByteBufferUtil.bytes(superColumnName));
+                }
+                SlicePredicate pred=new SlicePredicate().setColumn_names(columnNames);
+
+                results = clientLibrary.transactional_multiget_slice(keys, super1, pred);
+                if(superColumnName != null) {
+                    for (ByteBuffer key : keys) {
+                        ColumnOrSuperColumn resultsKeys = results.get(key).get(0);
+                        List<Column> resultsIds = resultsKeys.getSuper_column().getColumns();
+                        List<ByteBuffer> resultsStrings = new ArrayList<>(resultsIds.size());
+                        for (Column id : resultsIds) {
+                            resultsStrings.add(id.bufferForName());
+                        }
+                        Map<ByteBuffer,List<ColumnOrSuperColumn>> results2=clientLibrary.transactional_multiget_slice(resultsStrings, standard1, nColumnsPredicate);
+                        for (Entry<ByteBuffer, List<ColumnOrSuperColumn>> entry : results2.entrySet())
+                        {
+                            ByteBuffer key2 = entry.getKey();
+                            List<ColumnOrSuperColumn> columns2 = entry.getValue();
+
+                            columnCount += columns2.size();
+
+                            int keyByteTotal = 0;
+                            for (ColumnOrSuperColumn cosc : columns2) {
+                                keyByteTotal += ColumnOrSuperColumnHelper.findLength(cosc);
+                            }
+                            bytesCount += keyByteTotal;
+
+                            //allReads += ByteBufferUtil.string(key) + " = " + columns.size() + " cols = " + keyByteTotal + "B, ";
+                        }
+                        session.operations.getAndIncrement();
+                        session.keys.getAndAdd(resultsStrings.size());
+                    }
+                }
 
                 success = (results.size() == keysPerRead);
                 if (!success)

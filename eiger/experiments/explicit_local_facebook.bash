@@ -21,8 +21,8 @@ if [ $# -ne 1 ]; then
 fi
 
 nservers=$1
-dcl_config=${nservers}_in_princeton
-client_config=${nservers}_clients_in_princeton
+dcl_config=local_${nservers}_in_princeton
+client_config=local_${nservers}_clients_in_princeton
 
 #location specific config
 cops_dir="/home/vincent/Documents/eiger/eiger"
@@ -53,7 +53,10 @@ done
 num_servers=$(echo $all_servers | wc -w)
 num_servers_per_dc=$((num_servers / num_dcs))
 
-for dc in $(seq 0 $((num_dcs-1))); do
+echo $num_dcs;
+
+for dc in $(seq 0 $(($num_dcs-1))); do
+	echo $dc;
     this_dc_servers=$(echo $all_servers | sed 's/ /\n/g' | head -n $((num_servers_per_dc * (dc+1))) | tail -n $num_servers_per_dc | xargs)
     servers_by_dc[$dc]=${this_dc_servers}
 done
@@ -133,11 +136,11 @@ fb_populate_cluster() {
 		first_dc_servers_csv=$(echo ${servers_by_dc[0]} | sed 's/ /,/g')
 
 
-		mkdir -p ~/${dynamic_dir}/${exp_uid}; 
+		mkdir -p ${dynamic_dir}/${exp_uid}; 
 		$stress_killer; sleep 1; 
 		cd /home/vincent/Documents/eiger/eiger/; 
 		cd ${src_dir}/tools/stress; 
-		bin/stress --nodes=$first_dc_servers_csv --operation=EXPLICIT_FACEBOOK_POPULATE --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$keys_per_client --num-keys=$keys_per_client --stress-index=$cli_index --stress-count=$num_clients_per_dc > >(tee ~/${dynamic_dir}/${exp_uid}/populate.out) 2> >(tee ~/${dynamic_dir}/${exp_uid}/populate.err) 2>&1 | awk '{ print "'$client': "$0 }' &
+		bin/stress --nodes=$first_dc_servers_csv --operation=EXPLICIT_FACEBOOK_POPULATE --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$keys_per_client --num-keys=$keys_per_client --stress-index=$cli_index --stress-count=$num_clients_per_dc > >(tee ${dynamic_dir}/${exp_uid}/populate.out) 2> >(tee ${dynamic_dir}/${exp_uid}/populate.err) 2>&1 | awk '{ print "'$client': "$0 }' &
 		pop_pid=$!
 		pop_pids="$pop_pids $pop_pid"
 	    done
@@ -189,7 +192,7 @@ fb_populate_cluster() {
 	src_dir=$6
 	cluster_type=$7
 
-	cli_output_dir="~/${dynamic_dir}/${exp_uid}/${cluster_type}/trial${trial}"
+	cli_output_dir="${dynamic_dir}/${exp_uid}/${cluster_type}/trial${trial}"
 	data_file_name=$1_$2_$3+${4}+data
 
 	#for dc in $(seq 0 $((num_dcs - 1))); do
@@ -200,6 +203,8 @@ fb_populate_cluster() {
 		client=$(echo ${clients_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
 
 		mkdir -p $cli_output_dir; 
+		echo $cli_output_dir;
+		sleep 36000000000;
 		cd /home/vincent/Documents/eiger/eiger
 		cd ${src_dir}/tools/stress;
 		((bin/stress --progress-interval=1 --nodes=$local_servers_csv --	operation=EXPLICIT_FACEBOOK --consistency-level=LOCAL_QUORUM --replication-strategy=NetworkTopologyStrategy --strategy-properties=$strategy_properties --num-different-keys=$total_keys --stress-index=$cli_index --stress-count=$num_clients_per_dc --num-keys=2000000 --write-transaction-fraction=$write_trans_frac --threads=64 > >(tee ${cli_output_dir}/${data_file_name}) 2> ${cli_output_dir}/${data_file_name}.stderr ) &); 
@@ -210,6 +215,16 @@ fb_populate_cluster() {
 
 	#wait for clients to finish
 	wait
+    }
+
+gather_results() {
+	for dc in 0; do
+            for cli_index in $(seq 0 $((num_clients_per_dc - 1))); do
+		client_dir=${output_dir}/client${cli_index}
+		client=$(echo ${clients_by_dc[$dc]} | sed 's/ /\n/g' | head -n $((cli_index+1)) | tail -n 1)
+		rsync -az $client:${dynamic_dir}/${exp_uid}/* ${client_dir}
+	    done
+	done
     }
 
 #######################################

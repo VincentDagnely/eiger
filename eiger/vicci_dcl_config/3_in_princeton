@@ -1,0 +1,13 @@
+num_dcs=1
+cassandra_ips=grenoble
+cassandra_ips=grenoble
+cassandra_ips=grenoble
+node_ips=175.16.17.15
+node_ips=175.16.17.12
+node_ips=175.16.17.23
+job=1761994
+job=1761995
+job=1761996
+node_name=edel-15
+node_name=edel-12
+node_name=edel-23
