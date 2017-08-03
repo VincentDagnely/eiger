@@ -96,7 +96,7 @@ public class ExplicitFacebookPopulator extends Operation
 
             try
             {
-                clientLibrary.batch_mutate(records, new HashSet<>());
+                clientLibrary.batch_mutate(records, new HashSet<Dep>());
                 success = true;
             }
             catch (Exception e)

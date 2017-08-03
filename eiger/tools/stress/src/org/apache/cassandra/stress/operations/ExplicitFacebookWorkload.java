@@ -429,7 +429,7 @@ public class ExplicitFacebookWorkload extends Operation
 
     public void generateMutationsAndWrite(ExplicitClientLibrary clientLibrary, FacebookGenerator facebookGenerator, String operation, boolean transation) throws IOException {
         Map<ByteBuffer, Map<String, List<Mutation>>> records = new HashMap<ByteBuffer, Map<String, List<Mutation>>>();
-        HashSet<Dep> deps=new HashSet<>();
+        HashSet<Dep> deps=new HashSet<Dep>();
         if(operation.equals("postOnWall")){
             ByteBuffer key=ByteBuffer.wrap(generateKey("Comments"));
             records.put(key,facebookGenerator.generateComment());
