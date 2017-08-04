@@ -133,7 +133,7 @@ public class Session implements Serializable
     private boolean random       = false;
     private boolean unframed     = false;
     private int retryTimes       = 10;
-    private int port             = 9160;
+    private int port             = 22;
     private int superColumns     = 1;
     private String compression   = null;
     private String compactionStrategy = null;
@@ -531,7 +531,7 @@ public class Session implements Serializable
         }
 
         for (String node : nodes) {
-            localServerIPAndPorts.put(node, 9160);
+            localServerIPAndPorts.put(node, 22);
         }
 
         if (justCreateKeyspace) {

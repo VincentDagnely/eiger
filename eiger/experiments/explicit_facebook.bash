@@ -159,10 +159,7 @@ fb_populate_cluster() {
 --num-different-keys=$keys_per_client \
 --num-keys=$keys_per_client \
 --stress-index=$cli_index \
---stress-count=$num_clients_per_dc \
-"> >(tee -a /home/vincent/${dynamic_dir}/${exp_uid}/populate.out) \
-2> >(tee -a /home/vincent/${dynamic_dir}/${exp_uid}/populate.err >&2) \
- 2>&1 | awk '{ print "'$client': "$0 }' &
+--stress-count=$num_clients_per_dc" > >(tee -a /home/vincent/${dynamic_dir}/${exp_uid}/populate.out) 2> >(tee -a /home/vincent/${dynamic_dir}/${exp_uid}/populate.err >&2) 2>&1 | awk '{ print "'$client': "$0 }' &
 		pop_pid=$!
 		pop_pids="$pop_pids $pop_pid"
 	    done
@@ -241,9 +238,7 @@ fb_populate_cluster() {
 --stress-count=$num_clients_per_dc \
 --num-keys=2000000 \
 --write-transaction-fraction=$write_trans_frac \
---threads=64 \
-" > >(tee -a /home/vincent/${cli_output_dir}/${data_file_name}) \
-2> >(tee -a /home/vincent/${cli_output_dir}/${data_file_name}.stderr >&2)\
+--threads=64" > >(tee -a /home/vincent/${cli_output_dir}/${data_file_name}) 2> >(tee -a /home/vincent/${cli_output_dir}/${data_file_name}.stderr >&2)
 
 	ssh vdagnely@access.grid5000.fr ssh $client"\
 sleep $((exp_time + 10))"
