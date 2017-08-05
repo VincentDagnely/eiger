@@ -92,8 +92,8 @@
       <file leaf-file-name="Session.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/Session.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="337">
-              <caret line="183" column="42" lean-forward="true" selection-start-line="183" selection-start-column="42" selection-end-line="183" selection-end-column="42" />
+            <state relative-caret-position="277">
+              <caret line="135" column="39" lean-forward="false" selection-start-line="135" selection-start-column="39" selection-end-line="135" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -165,6 +165,7 @@
       <find>createKey</find>
       <find>port</find>
       <find>9160</find>
+      <find>22</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -969,8 +970,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/Session.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="337">
-          <caret line="183" column="42" lean-forward="true" selection-start-line="183" selection-start-column="42" selection-end-line="183" selection-end-column="42" />
+        <state relative-caret-position="277">
+          <caret line="135" column="39" lean-forward="false" selection-start-line="135" selection-start-column="39" selection-end-line="135" selection-end-column="39" />
           <folding />
         </state>
       </provider>

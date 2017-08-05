@@ -1,4 +1,4 @@
 num_dcs=1
-cassandra_ips=172.16.17.8
-cassandra_ips=172.16.192.7
-cassandra_ips=172.16.176.9
+cassandra_ips=172.16.130.32
+cassandra_ips=172.16.177.10
+cassandra_ips=172.16.177.11
