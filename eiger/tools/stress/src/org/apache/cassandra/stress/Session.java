@@ -133,7 +133,7 @@ public class Session implements Serializable
     private boolean random       = false;
     private boolean unframed     = false;
     private int retryTimes       = 10;
-    private int port             = 6667;
+    private int port             = 9160;
     private int superColumns     = 1;
     private String compression   = null;
     private String compactionStrategy = null;
@@ -531,7 +531,7 @@ public class Session implements Serializable
         }
 
         for (String node : nodes) {
-            localServerIPAndPorts.put(node, 6667);
+            localServerIPAndPorts.put(node, 9160);
         }
 
         if (justCreateKeyspace) {
@@ -935,6 +935,7 @@ public class Session implements Serializable
         String currentNode = nodes[Stress.randomizer.nextInt(nodes.length)];
 
         TSocket socket = new TSocket(currentNode, port);
+        System.out.println("-------CONNECTED1111111111--------");
         TTransport transport = (isUnframed()) ? socket : new TFramedTransport(socket);
         Cassandra.Client client = new Cassandra.Client(new TBinaryProtocol(transport));
 
