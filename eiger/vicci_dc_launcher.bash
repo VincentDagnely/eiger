@@ -16,13 +16,14 @@ wait=wait
 num_dcs=$(grep num_dcs $dcl_config | awk -F "=" '{ print $2 }')
 ips=($(grep cassandra_ips $dcl_config | awk -F "=" '{ print $2 }'))
 ips=($(echo "echo ${ips[@]}" | bash))
+sites=($(grep sites $dcl_config | awk -F "=" '{ print $2 }'))
+sites=($(echo "echo ${sites[@]}" | bash))
 #Seed from all the nodes
 seeds=$(echo ${ips[@]} | sed 's/ /, /g')
 echo "seeds=$seeds"
 
 nodes_per_dc=$((${#ips[@]} / num_dcs))
 total_nodes=$((num_dcs * nodes_per_dc))
-
 #sanity check
 if [ $(($nodes_per_dc * $num_dcs)) -ne ${#ips[@]} ]; then 
     echo ${nodes_per_dc}" * "${num_dcs}" != "${#ips[@]};
@@ -30,25 +31,26 @@ if [ $(($nodes_per_dc * $num_dcs)) -ne ${#ips[@]} ]; then
 fi
 
 echo 0
-echo $client
 #clean up all nodes in parallel
-for ip in ${ips[@]}; do
-    (ssh vdagnely@access.grid5000.fr "ssh $client -o StrictHostKeyChecking=no '\
-home/vincent/Documents/eiger/eiger/kill_all_cassandra.bash;\
-rm home/vincent/Documents/eiger/eiger/*hprof 2> /dev/null;\
-rm home/vincent/Documents/eiger/eiger/cassandra-vanilla/*hprof 2> /dev/null;\
-rm home/vincent/Documents/eiger/eiger/cassandra_var/cassandra*log 2> /dev/null;\
-rm home/vincent/Documents/eiger/eiger/cassandra_var/cassandra*log* 2> /dev/null;\
-rm -rf home/vincent/Documents/eiger/eiger/cassandra_var/data/* 2> /dev/null;\
-rm -rf home/vincent/Documents/eiger/eiger/cassandra_var/commitlog/* 2> /dev/null;\
-rm -rf home/vincent/Documents/eiger/eiger/cassandra_var/saved_caches/* 2> /dev/null;\
-rm -rf home/vincent/Documents/eiger/eiger/cassandra_var/stdout/* 2> /dev/null;\
-mkdir home/vincent/Documents/eiger/eiger/cassandra_var 2> /dev/null;\
-mkdir home/vincent/Documents/eiger/eiger/cassandra_var/data 2> /dev/null;\
-mkdir home/vincent/Documents/eiger/eiger/cassandra_var/commitlog 2> /dev/null;\
-mkdir home/vincent/Documents/eiger/eiger/cassandra_var/saved_caches 2> /dev/null;\
-mkdir home/vincent/Documents/eiger/eiger/cassandra_var/stdout 2> /dev/null;\
-'" 2>&1 | awk '{ print "'$ip': "$0 }' ) &
+for client in ${ips[@]}; do
+	echo $client
+    ssh vdagnely@access.grid5000.fr ssh $client "/home/vdagnely/home/vincent/Documents/eiger/eiger/kill_all_cassandra.bash"
+	echo "z"
+    ssh vdagnely@access.grid5000.fr ssh $client "rm /home/vdagnely/home/vincent/Documents/eiger/eiger/*hprof 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "rm /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra-vanilla/*hprof 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "rm /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/cassandra*log 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "rm /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/cassandra*log* 2> /dev/null"
+	echo "a"
+    ssh vdagnely@access.grid5000.fr ssh $client "rm -rf /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/data/* 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "rm -rf /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/commitlog/* 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "rm -rf /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/saved_caches/* 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "rm -rf /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/stdout/* 2> /dev/null"
+	echo "b"
+    ssh vdagnely@access.grid5000.fr ssh $client "mkdir /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "mkdir /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/data 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "mkdir /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/commitlog 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "mkdir /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/saved_caches 2> /dev/null"
+    ssh vdagnely@access.grid5000.fr ssh $client "mkdir /home/vdagnely/home/vincent/Documents/eiger/eiger/cassandra_var/stdout 2> /dev/null"
 done
 echo 1
 #wait
@@ -82,6 +84,7 @@ for dc in $(seq 0 $((num_dcs - 1))); do
 	echo dc+":"+n
         global_node_num=$((dc * nodes_per_dc + n))
 	local_ip=$(echo ${ips[global_node_num]})
+	local_site=$(echo ${sites[global_node_num]})
         # tokens can't be identical even though we want them to be ... so for now let's get them as close as possible
         token=$(echo "${n}*(2^127)/${nodes_per_dc} + $dc" | bc)
         # Using tokens for evenly splitting type 4 uuids now
@@ -104,29 +107,18 @@ for dc in $(seq 0 $((num_dcs - 1))); do
 	echo 7
         #set -x
 	#copy over conf files
-	(
-	scp -o StrictHostKeyChecking=no ${topo_file} vincent@${local_ip}:/home/vincent/Documents/eiger/eiger/conf/ 2>&1 | awk '{ print "'$local_ip': "$0 }'
-	scp -o StrictHostKeyChecking=no conf/vicci/${conf_file} vincent@${local_ip}:/home/vincent/Documents/eiger/eiger/conf/ 2>&1 | awk '{ print "'$local_ip': "$0 }'
-	scp -o StrictHostKeyChecking=no conf/vicci/${log4j_file} vincent@${local_ip}:/home/vincent/Documents/eiger/eiger/conf/ 2>&1 | awk '{ print "'$local_ip': "$0 }'
+	
+	scp -o StrictHostKeyChecking=no ${topo_file} vdagnely@access.grid5000.fr:/home/vdagnely/$local_site/home/vincent/Documents/eiger/eiger/conf/ 2>&1 | awk '{ print "'$local_ip': "$0 }'
+	scp -o StrictHostKeyChecking=no conf/vicci/${conf_file} vdagnely@access.grid5000.fr:/home/vdagnely/$local_site/home/vincent/Documents/eiger/eiger/conf/ 2>&1 | awk '{ print "'$local_ip': "$0 }'
+	scp -o StrictHostKeyChecking=no conf/vicci/${log4j_file} vdagnely@access.grid5000.fr:/home/vdagnely/$local_site/home/vincent/Documents/eiger/eiger/conf/ 2>&1 | awk '{ print "'$local_ip': "$0 }'
 
         #put this in ssh commands to modify JVM options
         #export JVM_OPTS="-Xms32M -Xmn64M"
 	echo 8
-	while [ 1 ]; do
-            ssh_output=$(ssh -o StrictHostKeyChecking=no vincent@$local_ip "\
-cd /home/vincent/Documents/eiger/eiger;\
-/home/vincent/Documents/eiger/eiger/bin/cassandra -Dcassandra.config=${conf_file} -Dlog4j.configuration=${log4j_file} > /home/vincent/Documents/eiger/eiger/cassandra_var/stdout/${dc}_${n}.out;\
-" 2>&1)
-	    failure=$(echo $ssh_output | grep "error while loading shared libraries")
-	    if [ "$failure" == "" ]; then
-		break
-	    fi
+	ssh vdagnely@access.grid5000.fr ssh $local_ip "/home/vdagnely/home/vincent/Documents/eiger/eiger/bin/cassandra -Dcassandra.config=${conf_file} -Dlog4j.configuration=${log4j_file}" > /home/vincent/Documents/eiger/eiger/cassandra_var/stdout/${dc}_${n}.out 2>&1
+
 	done
-	) &
-
-
         #set +x
-    done
 done
 echo 10
 
@@ -140,8 +132,7 @@ if [ "$wait" != "" ]; then
 	echo 12
         sleep 5
 	echo 13
-        normal_nodes=$(ssh -o StrictHostKeyChecking=no vincent@${ips[0]} \
-	    '/home/vincent/Documents/eiger/eiger/bin/nodetool -h localhost ring 2>&1 | grep "Normal" | wc -l')
+        normal_nodes=$(ssh vdagnely@access.grid5000.fr ssh ${ips[0]} '/home/vdagnely/home/vincent/Documents/eiger/eiger/bin/nodetool -h localhost ring 2>&1 | grep "Normal" | wc -l')
         echo "  "$normal_nodes
 	wait_time=$((wait_time+5))
 	if [[ $wait_time -ge 60 ]]; then
