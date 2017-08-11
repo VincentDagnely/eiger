@@ -480,8 +480,13 @@ public class ExplicitFacebookWorkload extends Operation
         else if(operation.equals("postOnGroup")){
             ByteBuffer key=ByteBuffer.wrap(generateKey("Comments"));
             ByteBuffer key_super=ByteBuffer.wrap(generateKey("Groups"));
+            System.out.println("groups");
+            System.out.println(generateKey("Groups"));
+            System.out.println(ByteBuffer.wrap(generateKey("Groups")));
+            System.out.println(key_super);
             records.put(key,facebookGenerator.generateComment());
             records.put(key_super,facebookGenerator.addTo(key,"commentsOnGroup"));
+
             System.out.println(key_super);
             System.out.println(records.get(key_super));
             System.out.println(records.get(key_super).get("Super1"));
