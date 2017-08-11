@@ -93,7 +93,7 @@ calculate_heap_sizes()
 # times. If in doubt, and if you do not particularly want to tweak, go with
 # 100 MB per physical CPU core.
 
-MAX_HEAP_SIZE="4G"
+MAX_HEAP_SIZE="8G"
 HEAP_NEWSIZE="800M"
 
 if [ "x$MAX_HEAP_SIZE" = "x" ] && [ "x$HEAP_NEWSIZE" = "x" ]; then

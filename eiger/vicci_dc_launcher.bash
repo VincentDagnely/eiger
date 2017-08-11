@@ -103,7 +103,7 @@ for dc in $(seq 0 $((num_dcs - 1))); do
         
 	#| sed 's/NODE_NUM/'$global_node_num'/g' \
 
-        sed 's/LOG_FILE/\/home\/vincent\/Documents\/eiger\/eiger\/cassandra_var\/cassandra_system.'$global_node_num'.log/g' conf/log4j-server_BASE.properties > conf/vicci/$log4j_file
+        sed 's/LOG_FILE/\/home\/vdagnely\/home\/vincent\/Documents\/eiger\/eiger\/cassandra_var\/cassandra_system.'$global_node_num'.log/g' conf/log4j-server_BASE.properties > conf/vicci/$log4j_file
 	echo 7
         #set -x
 	#copy over conf files
@@ -115,6 +115,7 @@ for dc in $(seq 0 $((num_dcs - 1))); do
         #put this in ssh commands to modify JVM options
         #export JVM_OPTS="-Xms32M -Xmn64M"
 	echo 8
+	echo "/home/vdagnely/home/vincent/Documents/eiger/eiger/bin/cassandra -Dcassandra.config=${conf_file} -Dlog4j.configuration=${log4j_file}"
 	ssh vdagnely@access.grid5000.fr ssh $local_ip "/home/vdagnely/home/vincent/Documents/eiger/eiger/bin/cassandra -Dcassandra.config=${conf_file} -Dlog4j.configuration=${log4j_file}" > /home/vincent/Documents/eiger/eiger/cassandra_var/stdout/${dc}_${n}.out 2>&1
 
 	done
