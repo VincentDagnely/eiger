@@ -492,9 +492,9 @@ public class ExplicitFacebookWorkload extends Operation
             System.out.println(records.get(key_super).get("Super1"));
             System.out.println(records.get(key_super).get("Super1").get(0));
             System.out.println(records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn());
-            System.out.println(records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getColumn());
-            System.out.println(records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getColumn().timestamp);
-            deps.add(new Dep(key_super,records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            System.out.println(records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getSuper_column());
+            System.out.println(records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getSuper_column().getColumns().get(0).timestamp);
+            deps.add(new Dep(key_super,records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getSuper_column().getColumns().get(0).timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
         }
 /*        else if(operation.equals("updateComment")){
