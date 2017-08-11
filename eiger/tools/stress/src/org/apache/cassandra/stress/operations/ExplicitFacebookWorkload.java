@@ -352,8 +352,9 @@ public class ExplicitFacebookWorkload extends Operation
         FacebookGenerator facebookGenerator=new FacebookGenerator(values,0);
 
 
-        String[] operations={"postOnWall","comment","createAlbum","addPicture","addFriend","createGroup","addPersonToGroup","postOnGroup",
-                "sendMessage"};
+        //String[] operations={"postOnWall","comment","createAlbum","addPicture","addFriend","createGroup","addPersonToGroup","postOnGroup","sendMessage"};
+
+        String[] operations={"sendMessage"};
 
 
 
@@ -481,6 +482,13 @@ public class ExplicitFacebookWorkload extends Operation
             ByteBuffer key_super=ByteBuffer.wrap(generateKey("Groups"));
             records.put(key,facebookGenerator.generateComment());
             records.put(key_super,facebookGenerator.addTo(key,"commentsOnGroup"));
+            System.out.println(key_super);
+            System.out.println(records.get(key_super));
+            System.out.println(records.get(key_super).get("Super1"));
+            System.out.println(records.get(key_super).get("Super1").get(0));
+            System.out.println(records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn());
+            System.out.println(records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getColumn());
+            System.out.println(records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getColumn().timestamp);
             deps.add(new Dep(key_super,records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
         }

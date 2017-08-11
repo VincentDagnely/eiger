@@ -39,8 +39,8 @@
       <file leaf-file-name="ExplicitFacebookWorkload.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/operations/ExplicitFacebookWorkload.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="445">
-              <caret line="367" column="54" lean-forward="false" selection-start-line="367" selection-start-column="54" selection-end-line="367" selection-end-column="54" />
+            <state relative-caret-position="607">
+              <caret line="490" column="123" lean-forward="false" selection-start-line="490" selection-start-column="123" selection-end-line="490" selection-end-column="123" />
               <folding />
             </state>
           </provider>
@@ -126,6 +126,7 @@
       <find>cassan</find>
       <find>stres</find>
       <find>multiget_slice</find>
+      <find>print</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -927,8 +928,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/operations/ExplicitFacebookWorkload.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="445">
-          <caret line="367" column="54" lean-forward="false" selection-start-line="367" selection-start-column="54" selection-end-line="367" selection-end-column="54" />
+        <state relative-caret-position="607">
+          <caret line="490" column="123" lean-forward="false" selection-start-line="490" selection-start-column="123" selection-end-line="490" selection-end-column="123" />
           <folding />
         </state>
       </provider>
