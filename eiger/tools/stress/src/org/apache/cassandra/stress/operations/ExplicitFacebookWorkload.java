@@ -364,7 +364,7 @@ public class ExplicitFacebookWorkload extends Operation
         int totalColumns = 0;
         int totalBytes = 0;
         for(int i=0;i<keysPerWrite;i++){
-            int operation=Stress.randomizer.nextInt(operations.length+1);
+            int operation=Stress.randomizer.nextInt(operations.length);
             generateMutationsAndWrite(clientLibrary, facebookGenerator, operations[operation], transaction);
         }
 
@@ -428,6 +428,7 @@ public class ExplicitFacebookWorkload extends Operation
     }
 
     public void generateMutationsAndWrite(ExplicitClientLibrary clientLibrary, FacebookGenerator facebookGenerator, String operation, boolean transation) throws IOException {
+        System.out.println(operation);
         Map<ByteBuffer, Map<String, List<Mutation>>> records = new HashMap<ByteBuffer, Map<String, List<Mutation>>>();
         HashSet<Dep> deps=new HashSet<Dep>();
         if(operation.equals("postOnWall")){
