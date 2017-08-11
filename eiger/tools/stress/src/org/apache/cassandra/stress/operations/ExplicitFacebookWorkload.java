@@ -353,8 +353,7 @@ public class ExplicitFacebookWorkload extends Operation
 
 
         String[] operations={"postOnWall","comment","createAlbum","addPicture","addFriend","createGroup","addPersonToGroup","postOnGroup",
-                "updateComment","updateProfile","removeComment","removePicture","removeFriend","removeAlbum","sendMessage","refuseFriend",
-                "acceptFriend","updateSetting","updateAlbum","updateGroup"};
+                "sendMessage"};
 
 
 
