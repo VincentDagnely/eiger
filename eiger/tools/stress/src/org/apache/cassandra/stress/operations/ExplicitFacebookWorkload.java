@@ -364,6 +364,8 @@ public class ExplicitFacebookWorkload extends Operation
         int totalBytes = 0;
         for(int i=0;i<keysPerWrite;i++){
             int operation=Stress.randomizer.nextInt(operations.length);
+            System.out.println(operation);
+            System.out.println(operations[operation]);
             generateMutationsAndWrite(clientLibrary, facebookGenerator, operations[operation], transaction);
         }
 

@@ -39,8 +39,8 @@
       <file leaf-file-name="ExplicitFacebookWorkload.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/operations/ExplicitFacebookWorkload.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-545">
-              <caret line="355" column="29" lean-forward="false" selection-start-line="355" selection-start-column="29" selection-end-line="355" selection-end-column="29" />
+            <state relative-caret-position="445">
+              <caret line="367" column="54" lean-forward="false" selection-start-line="367" selection-start-column="54" selection-end-line="367" selection-end-column="54" />
               <folding />
             </state>
           </provider>
@@ -927,8 +927,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/operations/ExplicitFacebookWorkload.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-545">
-          <caret line="355" column="29" lean-forward="false" selection-start-line="355" selection-start-column="29" selection-end-line="355" selection-end-column="29" />
+        <state relative-caret-position="445">
+          <caret line="367" column="54" lean-forward="false" selection-start-line="367" selection-start-column="54" selection-end-line="367" selection-end-column="54" />
           <folding />
         </state>
       </provider>
