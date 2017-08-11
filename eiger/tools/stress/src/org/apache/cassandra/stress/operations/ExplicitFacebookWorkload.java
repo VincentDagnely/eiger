@@ -354,7 +354,7 @@ public class ExplicitFacebookWorkload extends Operation
 
         //String[] operations={"postOnWall","comment","createAlbum","addPicture","addFriend","createGroup","addPersonToGroup","postOnGroup","sendMessage"};
 
-        String[] operations={"sendMessage"};
+        String[] operations={"postOnGroup"};
 
 
 
