@@ -49,14 +49,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FacebookGenerator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/operations/FacebookGenerator.java">
+      <file leaf-file-name="Stress.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/Stress.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="67">
-              <caret line="514" column="54" lean-forward="true" selection-start-line="514" selection-start-column="54" selection-end-line="514" selection-end-column="54" />
-              <folding>
-                <element signature="e#21830#21854#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="225">
+              <caret line="61" column="2" lean-forward="true" selection-start-line="61" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -64,8 +62,8 @@
       <file leaf-file-name="Session.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/Session.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="759" column="13" lean-forward="false" selection-start-line="759" selection-start-column="13" selection-end-line="760" selection-end-column="13" />
+            <state relative-caret-position="277">
+              <caret line="825" column="54" lean-forward="false" selection-start-line="825" selection-start-column="49" selection-end-line="825" selection-end-column="54" />
               <folding>
                 <element signature="e#26616#26617#0" expanded="true" />
                 <element signature="e#26667#26668#0" expanded="true" />
@@ -77,8 +75,8 @@
       <file leaf-file-name="ExplicitFacebookWorkload.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/operations/ExplicitFacebookWorkload.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
-              <caret line="50" column="103" lean-forward="false" selection-start-line="50" selection-start-column="103" selection-end-line="50" selection-end-column="103" />
+            <state relative-caret-position="308">
+              <caret line="50" column="54" lean-forward="false" selection-start-line="50" selection-start-column="54" selection-end-line="50" selection-end-column="54" />
               <folding />
             </state>
           </provider>
@@ -94,35 +92,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TFramedTransport.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/lib/libthrift-0.7.0.jar!/org/apache/thrift/transport/TFramedTransport.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="32" column="26" lean-forward="true" selection-start-line="32" selection-start-column="24" selection-end-line="32" selection-end-column="28" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="StressAction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/StressAction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+            <state relative-caret-position="464">
+              <caret line="273" column="38" lean-forward="false" selection-start-line="273" selection-start-column="28" selection-end-line="273" selection-end-column="38" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TSocket.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/lib/libthrift-0.7.0.jar!/org/apache/thrift/transport/TSocket.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="188">
-              <caret line="43" column="30" lean-forward="false" selection-start-line="43" selection-start-column="30" selection-end-line="43" selection-end-column="30" />
-              <folding>
-                <element signature="e#1485#1486#0" expanded="true" />
-                <element signature="e#1520#1521#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -163,6 +138,8 @@
       <find>port</find>
       <find>666</find>
       <find>cassan</find>
+      <find>stres</find>
+      <find>multiget_slice</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -846,14 +823,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/Stress.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="61" column="2" lean-forward="true" selection-start-line="61" selection-start-column="2" selection-end-line="61" selection-end-column="2" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/java/org/apache/cassandra/db/ColumnFamily.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -895,25 +864,6 @@
           <folding>
             <element signature="e#1485#1486#0" expanded="true" />
             <element signature="e#1520#1521#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/StressAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/Session.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="759" column="13" lean-forward="false" selection-start-line="759" selection-start-column="13" selection-end-line="760" selection-end-column="13" />
-          <folding>
-            <element signature="e#26616#26617#0" expanded="true" />
-            <element signature="e#26667#26668#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -961,10 +911,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/Session.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="825" column="54" lean-forward="false" selection-start-line="825" selection-start-column="49" selection-end-line="825" selection-end-column="54" />
+          <folding>
+            <element signature="e#26616#26617#0" expanded="true" />
+            <element signature="e#26667#26668#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/Stress.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="61" column="2" lean-forward="true" selection-start-line="61" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/StressAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="464">
+          <caret line="273" column="38" lean-forward="false" selection-start-line="273" selection-start-column="28" selection-end-line="273" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tools/stress/src/org/apache/cassandra/stress/operations/ExplicitFacebookWorkload.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="50" column="103" lean-forward="false" selection-start-line="50" selection-start-column="103" selection-end-line="50" selection-end-column="103" />
+        <state relative-caret-position="308">
+          <caret line="50" column="54" lean-forward="false" selection-start-line="50" selection-start-column="54" selection-end-line="50" selection-end-column="54" />
           <folding />
         </state>
       </provider>

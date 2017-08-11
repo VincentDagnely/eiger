@@ -47,8 +47,8 @@ public class ExplicitFacebookWorkload extends Operation
             write(clientLibrary, 1, transaction);
         } else {
             //String[] tables={"Walls","Profiles","Pictures","Groups","Profiles","Conversations","Settings"};
-            String[] tables={"Walls","Profiles","Pictures","Groups","Conversations",};
-            String[] superColumNames={"commentsOnWall","albums","comments","commentsOnGroup","messages"};
+            String[] tables={"Walls","Pictures","Groups","Conversations",};
+            String[] superColumNames={"commentsOnWall","comments","commentsOnGroup","messages"};
             //String[] superColumNames={"commentsOnWall","albums","comments","commentsOnGroup","conversations","messages",null};
             int chosen=Stress.randomizer.nextInt(tables.length);
             read2(clientLibrary, 1,tables[chosen],superColumNames[chosen]);
