@@ -353,7 +353,7 @@ public class ExplicitFacebookWorkload extends Operation
 
 
         String[] operations={"postOnWall","comment","createAlbum","addPicture","addFriend","createGroup","addPersonToGroup","postOnGroup",
-                "like","updateComment","updateProfile","removeComment","removePicture","removeFriend","removeAlbum","sendMessage","refuseFriend",
+                "updateComment","updateProfile","removeComment","removePicture","removeFriend","removeAlbum","sendMessage","refuseFriend",
                 "acceptFriend","updateSetting","updateAlbum","updateGroup"};
 
 
@@ -442,7 +442,7 @@ public class ExplicitFacebookWorkload extends Operation
             ByteBuffer key_super=ByteBuffer.wrap(generateKey("Comments"));
             records.put(key,facebookGenerator.generateComment());
             records.put(key_super,facebookGenerator.addTo(key,"relatedComments"));
-            deps.add(new Dep(key_super,records.get(key_super).get("Comments").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            deps.add(new Dep(key_super,records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("createAlbum")){
@@ -455,13 +455,13 @@ public class ExplicitFacebookWorkload extends Operation
             ByteBuffer key_super=ByteBuffer.wrap(generateKey("Albums"));
             records.put(key,facebookGenerator.generatePicture());
             records.put(key_super,facebookGenerator.addTo(key,"pictures"));
-            deps.add(new Dep(key_super,records.get(key_super).get("Albums").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            deps.add(new Dep(key_super,records.get(key_super).get("Standard1").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("addFriend")){
             ByteBuffer key=ByteBuffer.wrap(generateKey("Profiles"));
             records.put(key,facebookGenerator.generateProfile());
-            deps.add(new Dep(key,records.get(key).get("Profiles").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            deps.add(new Dep(key,records.get(key).get("Standard1").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("CreateGroup")){
@@ -472,7 +472,7 @@ public class ExplicitFacebookWorkload extends Operation
         else if(operation.equals("addPersonToGroup")){
             ByteBuffer key=ByteBuffer.wrap(generateKey("Groups"));
             records.put(key,facebookGenerator.addTo(facebookGenerator.getFBValue(),"personsOnGroup"));
-            deps.add(new Dep(key,records.get(key).get("Groups").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            deps.add(new Dep(key,records.get(key).get("Super1").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
         }
         else if(operation.equals("postOnGroup")){
@@ -480,18 +480,10 @@ public class ExplicitFacebookWorkload extends Operation
             ByteBuffer key_super=ByteBuffer.wrap(generateKey("Groups"));
             records.put(key,facebookGenerator.generateComment());
             records.put(key_super,facebookGenerator.addTo(key,"commentsOnGroup"));
-            deps.add(new Dep(key_super,records.get(key_super).get("Groups").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            deps.add(new Dep(key_super,records.get(key_super).get("Super1").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
         }
-        else if(operation.equals("like")){
-            String[] tables={"Comments","Pictures"};
-            int table=Stress.randomizer.nextInt(2);
-            ByteBuffer key=ByteBuffer.wrap(generateKey(tables[table]));
-            records.put(key,facebookGenerator.addTo(facebookGenerator.getFBValue(),"personsWhoLiked"));
-            deps.add(new Dep(key,records.get(key).get(tables[table]).get(0).getColumn_or_supercolumn().getColumn().timestamp));
-            writeOne(clientLibrary, key, records, deps, transation);
-        }
-        else if(operation.equals("updateComment")){
+/*        else if(operation.equals("updateComment")){
             ByteBuffer key=ByteBuffer.wrap(generateKey("Comments"));
             records.put(key,facebookGenerator.deleteComment());
             records.put(key,facebookGenerator.generateComment());
@@ -536,16 +528,16 @@ public class ExplicitFacebookWorkload extends Operation
             records.put(key,facebookGenerator.deleteAlbum());
             deps.add(new Dep(key,records.get(key).get("Albums").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
-        }
+        }*/
         else if(operation.equals("sendMessage")){
             ByteBuffer key=ByteBuffer.wrap(generateKey("Messages"));
             ByteBuffer super_key=ByteBuffer.wrap(generateKey("Conversations"));
             records.put(key,facebookGenerator.generateMessage());
             records.put(super_key,facebookGenerator.addTo(key,"messages"));
-            deps.add(new Dep(super_key,records.get(super_key).get("Conversations").get(0).getColumn_or_supercolumn().getColumn().timestamp));
+            deps.add(new Dep(super_key,records.get(super_key).get("Super1").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
         }
-        else if(operation.equals("refuseFriend")){
+ /*       else if(operation.equals("refuseFriend")){
             ByteBuffer key=ByteBuffer.wrap(generateKey("Profiles"));
             records.put(key,facebookGenerator.deleteProfile());
             records.put(key,facebookGenerator.generateProfile());
@@ -579,6 +571,6 @@ public class ExplicitFacebookWorkload extends Operation
             records.put(key,facebookGenerator.generateGroup());
             deps.add(new Dep(key,records.get(key).get("Groups").get(0).getColumn_or_supercolumn().getColumn().timestamp));
             writeOne(clientLibrary, key, records, deps, transation);
-        }
+        }*/
     }
 }
