@@ -46,8 +46,10 @@ public class ExplicitFacebookWorkload extends Operation
 
             write(clientLibrary, 1, transaction);
         } else {
-            String[] tables={"Walls","Profiles","Pictures","Groups","Profiles","Conversations","Settings"};
-            String[] superColumNames={"commentsOnWall","albums","comments","commentsOnGroup","conversations","messages",null};
+            //String[] tables={"Walls","Profiles","Pictures","Groups","Profiles","Conversations","Settings"};
+            String[] tables={"Walls","Profiles","Pictures","Groups","Conversations",};
+            String[] superColumNames={"commentsOnWall","albums","comments","commentsOnGroup","messages"};
+            //String[] superColumNames={"commentsOnWall","albums","comments","commentsOnGroup","conversations","messages",null};
             int chosen=Stress.randomizer.nextInt(tables.length);
             read2(clientLibrary, 1,tables[chosen],superColumNames[chosen]);
         }
@@ -157,12 +159,10 @@ public class ExplicitFacebookWorkload extends Operation
                 .setReversed(false)
                 .setCount(1024));
 
-        String[] tables={"Comments","Albums","Pictures","Walls","Groups","Profiles","Conversations","Settings","Messages"};
         Map<ByteBuffer,List<ColumnOrSuperColumn>> results;
 
         int columnCount = 0;
         long bytesCount = 0;
-        int table=Stress.randomizer.nextInt(tables.length);
 
         ColumnParent super1 = new ColumnParent("Super1");
         ColumnParent standard1 = new ColumnParent("Standard1");

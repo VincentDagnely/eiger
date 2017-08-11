@@ -1,7 +1,3 @@
 num_dcs=1
-cassandra_ips=172.16.176.4
-cassandra_ips=172.16.16.8
-cassandra_ips=172.16.98.2
+cassandra_ips=172.16.177.5
 sites=luxembourg
-sites=grenoble
-sites=rennes

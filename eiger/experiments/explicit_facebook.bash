@@ -152,7 +152,7 @@ fb_populate_cluster() {
 		ssh vdagnely@access.grid5000.fr ssh $client "\
 /home/vdagnely${src_dir}/tools/stress/bin/stress \
 --nodes=$first_dc_servers_csv \
---operation=FACEBOOK_POPULATE \
+--operation=EXPLICIT_FACEBOOK_POPULATE \
 --consistency-level=LOCAL_QUORUM \
 --replication-strategy=NetworkTopologyStrategy \
 --strategy-properties=$strategy_properties \
@@ -229,7 +229,7 @@ fb_populate_cluster() {
 /home/vdagnely${src_dir}/tools/stress/bin/stress \
 --progress-interval=1 \
 --nodes=$local_servers_csv \
---operation=FACEBOOK \
+--operation=EXPLICIT_FACEBOOK \
 --consistency-level=LOCAL_QUORUM \
 --replication-strategy=NetworkTopologyStrategy \
 --strategy-properties=$strategy_properties \
